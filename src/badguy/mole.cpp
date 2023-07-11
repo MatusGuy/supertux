@@ -175,6 +175,7 @@ Mole::on_flip(float height)
 {
   BadGuy::on_flip(height);
   FlipLevelTransformer::transform_flip(m_flip);
+  m_physic.set_gravity_modifier(m_flip == NO_FLIP ? 1.0f : -1.0f); // stay on ground
 }
 
 /* EOF */
