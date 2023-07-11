@@ -22,6 +22,7 @@
 #include "badguy/mole_rock.hpp"
 #include "math/random.hpp"
 #include "math/util.hpp"
+#include "object/tilemap.hpp"
 #include "sprite/sprite.hpp"
 #include "supertux/flip_level_transformer.hpp"
 #include "supertux/sector.hpp"
@@ -38,6 +39,7 @@ Mole::Mole(const ReaderMapping& reader) :
   throw_timer()
 {
   m_physic.enable_gravity(true);
+  m_physic.set_gravity_modifier(1000.f);
   SoundManager::current()->preload("sounds/fall.wav");
   SoundManager::current()->preload("sounds/squish.wav");
   SoundManager::current()->preload("sounds/dartfire.wav");
@@ -89,6 +91,11 @@ void
 Mole::active_update(float dt_sec)
 {
   BadGuy::active_update(dt_sec);
+
+  if (m_physic.gravity_enabled() && m_physic.get_acceleration_y() == 0)
+  {
+    m_physic.enable_gravity(false);
+  }
 
   switch (state) {
     case PRE_THROWING:
@@ -175,7 +182,6 @@ Mole::on_flip(float height)
 {
   BadGuy::on_flip(height);
   FlipLevelTransformer::transform_flip(m_flip);
-  m_physic.set_gravity_modifier(m_flip == NO_FLIP ? 1.0f : -1.0f); // stay on ground
 }
 
 /* EOF */
