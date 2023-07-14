@@ -1780,6 +1780,11 @@ Player::set_bonus(BonusType type, bool animate)
         return false;
       }
     }
+
+    // if tux (with no bonus) slides while collecting an earth flower,
+    // his grow sprite starts spinning around, we dont want that
+    animate = animate && !(m_sliding && type == EARTH_BONUS);
+
     if (animate) {
       m_growing = true;
       if (m_climbing)
