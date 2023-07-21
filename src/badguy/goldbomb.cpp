@@ -154,19 +154,20 @@ GoldBomb::active_update(float dt_sec)
     return;
   }
 
-  if (is_grabbed())
-    return;
+  if (is_grabbed()) return;
 
   WalkingBadguy::active_update(dt_sec);
 
   auto player = get_nearest_player();
-  if (!player) return;
-  const Vector p1 = get_bbox().get_middle();
-  const Vector p2 = player->get_bbox().get_middle();
-  const Vector dist = (p2 - p1);
+  if (player) {
+    const Vector p1      = get_bbox().get_middle();
+    const Vector p2      = player->get_bbox().get_middle();
+    const Vector vecdist = p2-p1;
+    const float dist     = glm::length(vecdist);
 
-  if (tstate == STATE_NORMAL && glm::length(dist) <= 32*3) {
-    flee();
+    if (tstate == STATE_NORMAL && dist <= 32*3) {
+      flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
+    }
   }
 }
 
@@ -316,9 +317,13 @@ void GoldBomb::play_looping_sounds()
   }
 }
 
-void GoldBomb::flee()
+void GoldBomb::flee(Direction dir)
 {
   set_walk_speed(FLEEING_WALK_SPEED);
+  m_dir = dir;
+  m_physic.set_acceleration_x(0);
+  m_physic.inverse_velocity_x();
+  set_action(m_dir);
   tstate = STATE_FLEEING;
 }
 
