@@ -54,17 +54,19 @@ public:
   virtual void stop_looping_sounds() override;
   virtual void play_looping_sounds() override;
 
+  void flee();
+
 protected:
   virtual bool collision_squished(GameObject& object) override;
 
 private:
-  enum Ticking_State {
+  enum State {
     STATE_NORMAL,
-    STATE_TICKING
+    STATE_TICKING,
+    STATE_FLEEING
   };
 
-private:
-  Ticking_State tstate;
+  State tstate;
 
   std::unique_ptr<SoundSource> ticking;
   SpritePtr m_exploding_sprite;

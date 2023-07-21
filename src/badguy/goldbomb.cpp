@@ -29,13 +29,15 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
+const float NORMAL_WALK_SPEED = 80.0f;
+const float FLEEING_WALK_SPEED = 250.0f;
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
   tstate(STATE_NORMAL),
   ticking(),
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
-  walk_speed = 80;
+  walk_speed = NORMAL_WALK_SPEED;
   max_drop_height = 16;
 
   //Prevent stutter when Tux jumps on Gold Bomb
@@ -117,7 +119,7 @@ GoldBomb::collision_squished(GameObject& object)
     kill_fall();
     return true;
   }
-  if (is_valid() && tstate == STATE_NORMAL) {
+  if (is_valid() && tstate != STATE_TICKING) {
     tstate = STATE_TICKING;
     m_frozen = false;
     set_action(m_dir == Direction::LEFT ? "ticking-left" : "ticking-right", 1);
@@ -151,9 +153,21 @@ GoldBomb::active_update(float dt_sec)
     }
     return;
   }
+
   if (is_grabbed())
     return;
+
   WalkingBadguy::active_update(dt_sec);
+
+  auto player = get_nearest_player();
+  if (!player) return;
+  const Vector p1 = get_bbox().get_middle();
+  const Vector p2 = player->get_bbox().get_middle();
+  const Vector dist = (p2 - p1);
+
+  if (tstate == STATE_NORMAL && glm::length(dist) <= 32*3) {
+    flee();
+  }
 }
 
 void
@@ -300,6 +314,12 @@ void GoldBomb::play_looping_sounds()
   if (tstate == STATE_TICKING && ticking) {
     ticking->play();
   }
+}
+
+void GoldBomb::flee()
+{
+  set_walk_speed(FLEEING_WALK_SPEED);
+  tstate = STATE_FLEEING;
 }
 
 /* EOF */
