@@ -37,6 +37,7 @@ public:
 
   virtual void draw(DrawingContext& context) override;
   virtual void active_update(float dt_sec) override;
+  virtual void update(float dt_sec) override;
 
   virtual void ignite() override;
   virtual void freeze() override;

@@ -126,12 +126,7 @@ DiveMine::active_update(float dt_sec)
 {
   BadGuy::active_update(dt_sec);
 
-  if (m_frozen || !m_in_water)
-  {
-    m_physic.enable_gravity(true);
-    return;
-  }
-  m_physic.enable_gravity(false);
+  if (m_physic.gravity_enabled()) return;
 
   // Update float cycles
   if (!m_chasing)
@@ -175,6 +170,18 @@ DiveMine::active_update(float dt_sec)
     set_action(m_dir);
     m_chasing = (glm::length(dist) <= s_trigger_radius);
   }
+}
+
+void DiveMine::update(float dt_sec)
+{
+  BadGuy::update(dt_sec);
+
+  if (m_frozen || !m_in_water)
+  {
+    m_physic.enable_gravity(true);
+    return;
+  }
+  m_physic.enable_gravity(false);
 }
 
 void
