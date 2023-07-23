@@ -95,9 +95,15 @@ HitResponse
 DiveMine::collision_player(Player& player, const CollisionHit& hit)
 {
   if (!m_frozen)
+  {
     explode();
-
-  return ABORT_MOVE;
+    return ABORT_MOVE;
+  }
+  else
+  {
+    BadGuy::collision_player(player, hit);
+    return FORCE_MOVE;
+  }
 }
 
 void
@@ -182,6 +188,7 @@ DiveMine::freeze()
 {
   BadGuy::freeze();
 
+  // TODO: sus
   m_physic.reset();
   m_physic.set_velocity_y(1.f);
 }
