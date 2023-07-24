@@ -29,12 +29,17 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
+const float HOP_HEIGHT = -150.f;
+const float REALIZE_TIME = 0.3f;
+const float REALIZE_DIST = 256.f;
 const float NORMAL_WALK_SPEED = 80.0f;
 const float FLEEING_WALK_SPEED = 250.0f;
+
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
   tstate(STATE_NORMAL),
   ticking(),
+  m_realize_timer(),
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
   walk_speed = NORMAL_WALK_SPEED;
@@ -159,15 +164,35 @@ GoldBomb::active_update(float dt_sec)
   WalkingBadguy::active_update(dt_sec);
 
   auto player = get_nearest_player();
-  if (player) {
-    const Vector p1      = get_bbox().get_middle();
-    const Vector p2      = player->get_bbox().get_middle();
-    const Vector vecdist = p2-p1;
-    const float dist     = glm::length(vecdist);
+  if (!player) return;
 
-    if (tstate == STATE_NORMAL && dist <= 32*3) {
-      flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
-    }
+  const Vector p1      = get_bbox().get_middle();
+  const Vector p2      = player->get_bbox().get_middle();
+  const Vector vecdist = p2-p1;
+  const float dist     = glm::length(vecdist);
+
+  if (dist > REALIZE_DIST)
+  {
+    tstate = STATE_NORMAL;
+    return;
+  }
+
+  switch (tstate) {
+
+  case STATE_NORMAL:
+    m_physic.set_velocity_y(HOP_HEIGHT);
+    m_physic.set_velocity_x(0);
+    m_physic.set_acceleration_x(0);
+    m_sprite->stop_animation();
+    tstate = STATE_REALIZING;
+    m_realize_timer.start(REALIZE_TIME);
+    break;
+
+  case STATE_REALIZING:
+    if (!m_realize_timer.check()) break;
+
+    flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
+    break;
   }
 }
 
@@ -321,8 +346,11 @@ void GoldBomb::flee(Direction dir)
 {
   set_walk_speed(FLEEING_WALK_SPEED);
   m_dir = dir;
-  m_physic.set_acceleration_x(0);
-  m_physic.set_velocity_x(FLEEING_WALK_SPEED * (dir == Direction::LEFT ? -1 : 1));
+
+  const float speed = FLEEING_WALK_SPEED * (dir == Direction::LEFT ? -1 : 1);
+  m_physic.set_acceleration_x(speed);
+  m_physic.set_velocity_x(speed);
+
   set_action(m_dir);
   tstate = STATE_FLEEING;
 }

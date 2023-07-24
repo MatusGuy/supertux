@@ -60,13 +60,16 @@ protected:
   virtual bool collision_squished(GameObject& object) override;
 
 private:
-  enum State {
+  enum Ticking_State {
     STATE_NORMAL,
     STATE_TICKING,
-    STATE_FLEEING
+    STATE_REALIZING,
+    STATE_FLEEING,
+    STATE_CORNERED
   };
 
-  State tstate;
+  Ticking_State tstate;
+  Timer m_realize_timer;
 
   std::unique_ptr<SoundSource> ticking;
   SpritePtr m_exploding_sprite;
