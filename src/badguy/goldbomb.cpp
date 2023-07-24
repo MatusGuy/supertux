@@ -154,7 +154,7 @@ GoldBomb::active_update(float dt_sec)
     return;
   }
 
-  if (is_grabbed()) return;
+  if (m_frozen) return;
 
   WalkingBadguy::active_update(dt_sec);
 
@@ -286,7 +286,7 @@ GoldBomb::ungrab(MovingObject& object, Direction dir_)
 void
 GoldBomb::freeze()
 {
-  if (tstate == STATE_NORMAL) {
+  if (tstate != STATE_TICKING) {
     WalkingBadguy::freeze();
   }
 }
@@ -322,7 +322,7 @@ void GoldBomb::flee(Direction dir)
   set_walk_speed(FLEEING_WALK_SPEED);
   m_dir = dir;
   m_physic.set_acceleration_x(0);
-  m_physic.inverse_velocity_x();
+  m_physic.set_velocity_x(FLEEING_WALK_SPEED * (dir == Direction::LEFT ? -1 : 1));
   set_action(m_dir);
   tstate = STATE_FLEEING;
 }
