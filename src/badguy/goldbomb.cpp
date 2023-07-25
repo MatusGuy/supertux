@@ -199,8 +199,6 @@ GoldBomb::active_update(float dt_sec)
     return;
   }
 
-  if (m_recover_timer.started()) m_recover_timer.start(RECOVER_TIME);
-
   // This is only used to calculate where tux is
   const Vector p1      = get_bbox().get_middle();
   const Vector p2      = obj->get_bbox().get_middle();
@@ -213,7 +211,6 @@ GoldBomb::active_update(float dt_sec)
     m_physic.set_velocity_y(HOP_HEIGHT);
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
-    m_dir = vecdist.x > 0 ? Direction::RIGHT : Direction::LEFT;
     m_sprite->set_action("flee", m_dir);
     tstate = STATE_REALIZING;
     m_realize_timer.start(REALIZE_TIME);
