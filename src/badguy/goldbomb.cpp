@@ -186,10 +186,22 @@ GoldBomb::active_update(float dt_sec)
 
   if (!obj)
   {
+    if (tstate == STATE_CORNERED)
+    {
+      set_action("recover", m_dir);
+      if (!m_sprite->animation_done()) return;
+      tstate = STATE_NORMAL;
+      set_action(m_dir);
+      return;
+    }
     tstate = STATE_NORMAL;
+    set_action(m_dir);
     return;
   }
 
+  if (m_recover_timer.started()) m_recover_timer.start(RECOVER_TIME);
+
+  // This is only used to calculate where tux is
   const Vector p1      = get_bbox().get_middle();
   const Vector p2      = obj->get_bbox().get_middle();
   const Vector vecdist = p2-p1;
@@ -201,7 +213,8 @@ GoldBomb::active_update(float dt_sec)
     m_physic.set_velocity_y(HOP_HEIGHT);
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
-    m_sprite->stop_animation();
+    m_dir = vecdist.x > 0 ? Direction::RIGHT : Direction::LEFT;
+    m_sprite->set_action("flee", m_dir);
     tstate = STATE_REALIZING;
     m_realize_timer.start(REALIZE_TIME);
     break;
@@ -211,7 +224,6 @@ GoldBomb::active_update(float dt_sec)
 
     flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
     break;
-
   }
 }
 
@@ -373,16 +385,18 @@ void GoldBomb::flee(Direction dir)
   if (get_action() == dir_to_string(m_dir))
     m_sprite->set_animation_loops(-1);
   else
-    set_action(m_dir);
+    set_action("flee", m_dir);
 
   tstate = STATE_FLEEING;
 }
 
 void GoldBomb::cornered()
 {
+  set_walk_speed(0);
   m_physic.set_velocity_x(0);
   m_physic.set_acceleration_x(0);
-  m_sprite->stop_animation();
+  m_dir = m_dir == Direction::RIGHT ? Direction::LEFT : Direction::RIGHT;
+  set_action("scared", m_dir);
   tstate = STATE_CORNERED;
 }
 
