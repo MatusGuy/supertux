@@ -224,6 +224,9 @@ GoldBomb::active_update(float dt_sec)
 
     flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
     break;
+
+  default: break;
+
   }
 }
 
