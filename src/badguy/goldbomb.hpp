@@ -55,6 +55,7 @@ public:
   virtual void play_looping_sounds() override;
 
   void flee(Direction dir);
+  void cornered();
 
 protected:
   virtual bool collision_squished(GameObject& object) override;

@@ -20,6 +20,8 @@
 #include "audio/sound_manager.hpp"
 #include "audio/sound_source.hpp"
 #include "badguy/owl.hpp"
+#include "badguy/haywire.hpp"
+#include "badguy/bomb.hpp"
 #include "object/coin_explode.hpp"
 #include "object/explosion.hpp"
 #include "object/player.hpp"
@@ -29,11 +31,11 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
-const float HOP_HEIGHT = -150.f;
-const float REALIZE_TIME = 0.3f;
+const float HOP_HEIGHT = -250.f;
+const float REALIZE_TIME = 0.5f;
 const float REALIZE_DIST = 256.f;
 const float NORMAL_WALK_SPEED = 80.0f;
-const float FLEEING_WALK_SPEED = 250.0f;
+const float FLEEING_WALK_SPEED = 180.0f;
 
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
@@ -74,7 +76,11 @@ GoldBomb::collision_solid(const CollisionHit& hit)
       m_physic.set_velocity_y(0);
     update_on_ground_flag(hit);
     return;
+  } else if (tstate != STATE_NORMAL && (hit.left || hit.right)) {
+    cornered();
+    return;
   }
+
   WalkingBadguy::collision_solid(hit);
 }
 
@@ -161,23 +167,45 @@ GoldBomb::active_update(float dt_sec)
 
   if (m_frozen) return;
 
+  if (tstate != STATE_NORMAL && on_ground() && might_fall())
+  {
+    cornered();
+    return;
+  }
   WalkingBadguy::active_update(dt_sec);
 
-  auto player = get_nearest_player();
-  if (!player) return;
+  if (tstate == STATE_NORMAL) set_walk_speed(NORMAL_WALK_SPEED);
 
-  const Vector p1      = get_bbox().get_middle();
-  const Vector p2      = player->get_bbox().get_middle();
-  const Vector vecdist = p2-p1;
-  const float dist     = glm::length(vecdist);
+  MovingObject* obj = nullptr;
+  std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), REALIZE_DIST);
+  for (int i = 0; i < objs.size(); i++)
+  {
+    obj = objs[i];
 
-  if (dist > REALIZE_DIST)
+    auto player = dynamic_cast<Player*>(obj);
+    if (player && !player->get_ghost_mode()) break;
+
+    auto haywire = dynamic_cast<Haywire*>(obj);
+    if (haywire && haywire->is_exploding()) break;
+
+    auto bomb = dynamic_cast<Bomb*>(obj);
+    if (bomb) break;
+
+    obj = nullptr;
+  }
+
+  if (!obj)
   {
     tstate = STATE_NORMAL;
     return;
   }
 
-  switch (tstate) {
+  const Vector p1      = get_bbox().get_middle();
+  const Vector p2      = obj->get_bbox().get_middle();
+  const Vector vecdist = p2-p1;
+
+  switch (tstate)
+  {
 
   case STATE_NORMAL:
     m_physic.set_velocity_y(HOP_HEIGHT);
@@ -193,6 +221,7 @@ GoldBomb::active_update(float dt_sec)
 
     flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
     break;
+
   }
 }
 
@@ -347,12 +376,24 @@ void GoldBomb::flee(Direction dir)
   set_walk_speed(FLEEING_WALK_SPEED);
   m_dir = dir;
 
-  const float speed = FLEEING_WALK_SPEED * (dir == Direction::LEFT ? -1 : 1);
+  const float speed = FLEEING_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1);
   m_physic.set_acceleration_x(speed);
   m_physic.set_velocity_x(speed);
 
-  set_action(m_dir);
+  if (get_action() == dir_to_string(m_dir))
+    m_sprite->set_animation_loops(-1);
+  else
+    set_action(m_dir);
+
   tstate = STATE_FLEEING;
+}
+
+void GoldBomb::cornered()
+{
+  m_physic.set_velocity_x(0);
+  m_physic.set_acceleration_x(0);
+  m_sprite->stop_animation();
+  tstate = STATE_CORNERED;
 }
 
 /* EOF */
