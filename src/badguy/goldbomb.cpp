@@ -188,7 +188,7 @@ GoldBomb::active_update(float dt_sec)
   {
     if (tstate == STATE_CORNERED)
     {
-      set_action("recover", m_dir);
+      set_action("recover", m_dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT);
       if (!m_sprite->animation_done()) return;
       tstate = STATE_NORMAL;
       set_action(m_dir);
@@ -208,9 +208,12 @@ GoldBomb::active_update(float dt_sec)
   {
 
   case STATE_NORMAL:
+    if (!on_ground()) break;
+
     m_physic.set_velocity_y(HOP_HEIGHT);
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
+    m_dir = vecdist.x > 0 ? Direction::RIGHT : Direction::LEFT;
     m_sprite->set_action("flee", m_dir);
     tstate = STATE_REALIZING;
     m_realize_timer.start(REALIZE_TIME);
@@ -392,8 +395,11 @@ void GoldBomb::cornered()
   set_walk_speed(0);
   m_physic.set_velocity_x(0);
   m_physic.set_acceleration_x(0);
-  m_dir = m_dir == Direction::RIGHT ? Direction::LEFT : Direction::RIGHT;
-  set_action("scared", m_dir);
+
+  Direction dir = m_dir;
+  m_dir = dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT;
+  set_action("scared", dir);
+
   tstate = STATE_CORNERED;
 }
 
