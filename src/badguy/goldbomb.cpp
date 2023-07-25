@@ -45,7 +45,7 @@ GoldBomb::GoldBomb(const ReaderMapping& reader) :
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
   walk_speed = NORMAL_WALK_SPEED;
-  max_drop_height = 16;
+  max_drop_height = 8;
 
   //Prevent stutter when Tux jumps on Gold Bomb
   SoundManager::current()->preload("sounds/explosion.wav");
@@ -103,7 +103,7 @@ GoldBomb::collision_player(Player& player, const CollisionHit& hit)
 HitResponse
 GoldBomb::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
 {
-  if (tstate == STATE_TICKING)
+  if (tstate != STATE_NORMAL)
     return FORCE_MOVE;
   return WalkingBadguy::collision_badguy(badguy, hit);
 }
@@ -157,7 +157,7 @@ GoldBomb::active_update(float dt_sec)
 
   if (m_frozen) return;
 
-  if (tstate != STATE_NORMAL && on_ground() && might_fall())
+  if (tstate != STATE_NORMAL && on_ground() && might_fall(max_drop_height+1))
   {
     cornered();
     return;
