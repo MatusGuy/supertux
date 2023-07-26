@@ -168,7 +168,7 @@ GoldBomb::active_update(float dt_sec)
 
   MovingObject* obj = nullptr;
   std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), REALIZE_DIST);
-  for (size_t i = 0; i < objs.size(); i++)
+  for (int i = 0; i < objs.size(); i++)
   {
     obj = objs[i];
 
