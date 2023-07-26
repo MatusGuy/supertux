@@ -33,7 +33,8 @@
 
 const float HOP_HEIGHT = -250.f;
 const float REALIZE_TIME = 0.5f;
-const float REALIZE_DIST = 256.f;
+const float REALIZE_DIST = 32.f * 8.f;
+const float SAFE_DIST = 32.f * 10.f;
 const float NORMAL_WALK_SPEED = 80.0f;
 const float FLEEING_WALK_SPEED = 180.0f;
 
@@ -45,7 +46,7 @@ GoldBomb::GoldBomb(const ReaderMapping& reader) :
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
   walk_speed = NORMAL_WALK_SPEED;
-  max_drop_height = 8;
+  max_drop_height = 600;
 
   //Prevent stutter when Tux jumps on Gold Bomb
   SoundManager::current()->preload("sounds/explosion.wav");
@@ -164,8 +165,6 @@ GoldBomb::active_update(float dt_sec)
   }
   WalkingBadguy::active_update(dt_sec);
 
-  if (tstate == STATE_NORMAL) set_walk_speed(NORMAL_WALK_SPEED);
-
   MovingObject* obj = nullptr;
   std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), REALIZE_DIST);
   for (int i = 0; i < objs.size(); i++)
@@ -191,11 +190,15 @@ GoldBomb::active_update(float dt_sec)
       set_action("recover", m_dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT);
       if (!m_sprite->animation_done()) return;
       tstate = STATE_NORMAL;
+      m_physic.set_velocity_x(NORMAL_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1));
+      m_physic.set_acceleration_x(0);
+      set_walk_speed(NORMAL_WALK_SPEED);
       set_action(m_dir);
       return;
     }
     tstate = STATE_NORMAL;
     set_action(m_dir);
+    set_walk_speed(NORMAL_WALK_SPEED);
     return;
   }
 
