@@ -379,7 +379,8 @@ void GoldBomb::play_looping_sounds()
   }
 }
 
-void GoldBomb::flee(Direction dir)
+void
+GoldBomb::flee(Direction dir)
 {
   set_walk_speed(FLEEING_WALK_SPEED);
   m_dir = dir;
@@ -396,7 +397,8 @@ void GoldBomb::flee(Direction dir)
   tstate = STATE_FLEEING;
 }
 
-void GoldBomb::cornered()
+void
+GoldBomb::cornered()
 {
   set_walk_speed(0);
   m_physic.set_velocity_x(0);
