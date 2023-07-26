@@ -40,8 +40,8 @@ const float FLEEING_WALK_SPEED = 180.0f;
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
   tstate(STATE_NORMAL),
-  ticking(),
   m_realize_timer(),
+  ticking(),
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
   walk_speed = NORMAL_WALK_SPEED;
