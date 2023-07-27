@@ -242,8 +242,8 @@ void
 GoldBomb::draw(DrawingContext& context)
 {
   m_sprite->draw(context.color(), get_pos(), m_layer, m_flip);
-  context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(REALIZE_DIST, REALIZE_DIST), get_bbox().get_middle()+Vector(REALIZE_DIST, REALIZE_DIST)), Color::from_rgba8888(255, 0, 0, 100), 100);
-  context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(SAFE_DIST, SAFE_DIST), get_bbox().get_middle()+Vector(SAFE_DIST, SAFE_DIST)), Color::from_rgba8888(0, 255, 0, 100), 100);
+  //context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(REALIZE_DIST, REALIZE_DIST), get_bbox().get_middle()+Vector(REALIZE_DIST, REALIZE_DIST)), Color::from_rgba8888(255, 0, 0, 100), 100);
+  //context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(SAFE_DIST, SAFE_DIST), get_bbox().get_middle()+Vector(SAFE_DIST, SAFE_DIST)), Color::from_rgba8888(0, 255, 0, 100), 100);
   if (tstate == STATE_TICKING)
   {
     m_exploding_sprite->set_blend(Blend::ADD);
