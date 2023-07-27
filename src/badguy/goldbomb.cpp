@@ -33,8 +33,11 @@
 
 const float HOP_HEIGHT = -250.f;
 const float REALIZE_TIME = 0.5f;
+
+// SAFE_DIST must be greater than REALIZE_DIST
 const float REALIZE_DIST = 32.f * 8.f;
 const float SAFE_DIST = 32.f * 10.f;
+
 const float NORMAL_WALK_SPEED = 80.0f;
 const float FLEEING_WALK_SPEED = 180.0f;
 
@@ -45,6 +48,8 @@ GoldBomb::GoldBomb(const ReaderMapping& reader) :
   ticking(),
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
+  assert(REALIZE_DIST > SAFE_DIST);
+
   walk_speed = NORMAL_WALK_SPEED;
   max_drop_height = 600;
 
@@ -166,7 +171,7 @@ GoldBomb::active_update(float dt_sec)
   WalkingBadguy::active_update(dt_sec);
 
   MovingObject* obj = nullptr;
-  std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), REALIZE_DIST);
+  std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), SAFE_DIST);
   for (size_t i = 0; i < objs.size(); i++)
   {
     obj = objs[i];
@@ -207,6 +212,8 @@ GoldBomb::active_update(float dt_sec)
   const Vector p2      = obj->get_bbox().get_middle();
   const Vector vecdist = p2-p1;
 
+  if (glm::length(vecdist) > REALIZE_DIST) return;
+
   switch (tstate)
   {
 
@@ -237,6 +244,8 @@ void
 GoldBomb::draw(DrawingContext& context)
 {
   m_sprite->draw(context.color(), get_pos(), m_layer, m_flip);
+  context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(REALIZE_DIST, REALIZE_DIST), get_bbox().get_middle()+Vector(REALIZE_DIST, REALIZE_DIST)), Color::from_rgba8888(255, 0, 0, 100), 100);
+  context.color().draw_filled_rect(Rectf(get_bbox().get_middle()-Vector(SAFE_DIST, SAFE_DIST), get_bbox().get_middle()+Vector(SAFE_DIST, SAFE_DIST)), Color::from_rgba8888(0, 255, 0, 100), 100);
   if (tstate == STATE_TICKING)
   {
     m_exploding_sprite->set_blend(Blend::ADD);
