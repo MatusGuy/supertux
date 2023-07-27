@@ -196,15 +196,10 @@ GoldBomb::active_update(float dt_sec)
     {
       set_action("recover", m_dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT);
       if (!m_sprite->animation_done()) return;
-      tstate = STATE_NORMAL;
-      m_physic.set_velocity_x(NORMAL_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1));
-      m_physic.set_acceleration_x(0);
-      set_walk_speed(NORMAL_WALK_SPEED);
-      max_drop_height = NORMAL_MAX_DROP_HEIGHT;
-      set_action(m_dir);
-      return;
     }
     tstate = STATE_NORMAL;
+    m_physic.set_velocity_x(NORMAL_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1));
+    m_physic.set_acceleration_x(0);
     set_action(m_dir);
     max_drop_height = NORMAL_MAX_DROP_HEIGHT;
     set_walk_speed(NORMAL_WALK_SPEED);
