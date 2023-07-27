@@ -187,6 +187,9 @@ GoldBomb::active_update(float dt_sec)
     auto bomb = dynamic_cast<Bomb*>(obj);
     if (bomb) break;
 
+    auto goldbomb = dynamic_cast<GoldBomb*>(obj);
+    if (goldbomb && goldbomb->is_ticking()) break;
+
     obj = nullptr;
   }
 
@@ -194,7 +197,7 @@ GoldBomb::active_update(float dt_sec)
   {
     if (tstate == STATE_CORNERED)
     {
-      set_action("recover", m_dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT);
+      set_action("recover", m_dir);
       if (!m_sprite->animation_done()) return;
     }
     tstate = STATE_NORMAL;
@@ -412,9 +415,7 @@ GoldBomb::cornered()
   m_physic.set_velocity_x(0);
   m_physic.set_acceleration_x(0);
 
-  Direction dir = m_dir;
-  m_dir = dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT;
-  set_action("scared", dir);
+  set_action("scared", m_dir);
 
   tstate = STATE_CORNERED;
 }
