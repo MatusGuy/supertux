@@ -34,12 +34,14 @@
 const float HOP_HEIGHT = -250.f;
 const float REALIZE_TIME = 0.5f;
 
-// SAFE_DIST must be greater than REALIZE_DIST
+// SAFE_DIST >= REALIZE_DIST
 const float REALIZE_DIST = 32.f * 8.f;
 const float SAFE_DIST = 32.f * 10.f;
 
 const float NORMAL_WALK_SPEED = 80.0f;
 const float FLEEING_WALK_SPEED = 180.0f;
+const int NORMAL_MAX_DROP_HEIGHT = 16;
+const int FLEEING_MAX_DROP_HEIGHT = 600;
 
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
@@ -48,10 +50,10 @@ GoldBomb::GoldBomb(const ReaderMapping& reader) :
   ticking(),
   m_exploding_sprite(SpriteManager::current()->create("images/creatures/mr_bomb/ticking_glow/ticking_glow.sprite"))
 {
-  assert(REALIZE_DIST > SAFE_DIST);
+  assert(SAFE_DIST >= REALIZE_DIST);
 
   walk_speed = NORMAL_WALK_SPEED;
-  max_drop_height = 600;
+  max_drop_height = NORMAL_MAX_DROP_HEIGHT;
 
   //Prevent stutter when Tux jumps on Gold Bomb
   SoundManager::current()->preload("sounds/explosion.wav");
@@ -163,7 +165,7 @@ GoldBomb::active_update(float dt_sec)
 
   if (m_frozen) return;
 
-  if (tstate != STATE_NORMAL && on_ground() && might_fall(max_drop_height+1))
+  if (tstate != STATE_NORMAL && on_ground() && might_fall(FLEEING_MAX_DROP_HEIGHT+1))
   {
     cornered();
     return;
@@ -198,16 +200,17 @@ GoldBomb::active_update(float dt_sec)
       m_physic.set_velocity_x(NORMAL_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1));
       m_physic.set_acceleration_x(0);
       set_walk_speed(NORMAL_WALK_SPEED);
+      max_drop_height = NORMAL_MAX_DROP_HEIGHT;
       set_action(m_dir);
       return;
     }
     tstate = STATE_NORMAL;
     set_action(m_dir);
+    max_drop_height = NORMAL_MAX_DROP_HEIGHT;
     set_walk_speed(NORMAL_WALK_SPEED);
     return;
   }
 
-  // This is only used to calculate where tux is
   const Vector p1      = get_bbox().get_middle();
   const Vector p2      = obj->get_bbox().get_middle();
   const Vector vecdist = p2-p1;
@@ -392,6 +395,7 @@ void
 GoldBomb::flee(Direction dir)
 {
   set_walk_speed(FLEEING_WALK_SPEED);
+  max_drop_height = FLEEING_MAX_DROP_HEIGHT;
   m_dir = dir;
 
   const float speed = FLEEING_WALK_SPEED * (m_dir == Direction::LEFT ? -1 : 1);
