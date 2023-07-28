@@ -223,7 +223,14 @@ GoldBomb::active_update(float dt_sec)
     [[fallthrough]];
 
   case STATE_NORMAL:
+  {
     if (!on_ground()) break;
+
+    // Gold bomb is solid therefore raycast from
+    // one of the upper corners of the hitbox.
+    // (grown 1 just to make sure it doesnt interfere.)
+    const Rectf eye = get_bbox().grown(1.f);
+    if (!Sector::get().can_see_player(vecdist.x <= 0 ? eye.p1() : Vector(eye.get_right(), eye.get_top()))) break;
 
     set_walk_speed(0);
     m_physic.set_velocity_y(HOP_HEIGHT);
@@ -234,6 +241,7 @@ GoldBomb::active_update(float dt_sec)
     tstate = STATE_REALIZING;
     m_realize_timer.start(REALIZE_TIME);
     break;
+  }
 
   case STATE_REALIZING:
     if (!m_realize_timer.check()) break;
