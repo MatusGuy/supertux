@@ -218,9 +218,14 @@ GoldBomb::active_update(float dt_sec)
   switch (tstate)
   {
 
+  case STATE_FLEEING:
+    if (m_dir == (vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT)) return;
+    [[fallthrough]];
+
   case STATE_NORMAL:
     if (!on_ground()) break;
 
+    set_walk_speed(0);
     m_physic.set_velocity_y(HOP_HEIGHT);
     m_physic.set_velocity_x(0);
     m_physic.set_acceleration_x(0);
