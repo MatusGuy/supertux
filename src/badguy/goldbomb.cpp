@@ -230,7 +230,12 @@ GoldBomb::active_update(float dt_sec)
     // one of the upper corners of the hitbox.
     // (grown 1 just to make sure it doesnt interfere.)
     const Rectf eye = get_bbox().grown(1.f);
-    if (!Sector::get().can_see_player(vecdist.x <= 0 ? eye.p1() : Vector(eye.get_right(), eye.get_top()))) break;
+    if (!Sector::get().free_line_of_sight(
+      vecdist.x <= 0 ? eye.p1() : Vector(eye.get_right(), eye.get_top()),
+      obj->get_bbox().get_middle(),
+      false,
+      obj
+    )) break;
 
     set_walk_speed(0);
     m_physic.set_velocity_y(HOP_HEIGHT);
