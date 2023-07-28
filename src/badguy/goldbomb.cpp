@@ -219,7 +219,7 @@ GoldBomb::active_update(float dt_sec)
   {
 
   case STATE_FLEEING:
-    if (m_dir == (vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT)) break;
+    if (m_dir == (vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT)) return;
     [[fallthrough]];
 
   case STATE_NORMAL:
