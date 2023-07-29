@@ -366,11 +366,8 @@ HitResponse Haywire::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
   }
   if (m_frozen)
     return FORCE_MOVE;
-  else
-  {
-    WalkingBadguy::collision_badguy(badguy, hit);
-  }
-  return ABORT_MOVE;
+
+  return WalkingBadguy::collision_badguy(badguy, hit);
 }
 
 /* EOF */
