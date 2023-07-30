@@ -215,7 +215,7 @@ GoldBomb::active_update(float dt_sec)
   const Vector p2      = obj->get_bbox().get_middle();
   const Vector vecdist = p2-p1;
 
-  if (glm::length(vecdist) > REALIZE_DIST) return;
+  if (glm::length(vecdist) > REALIZE_DIST && tstate == STATE_NORMAL) return;
 
   switch (tstate)
   {
