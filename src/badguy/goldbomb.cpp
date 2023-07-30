@@ -165,8 +165,10 @@ GoldBomb::active_update(float dt_sec)
 
   if (m_frozen) return;
 
-  if (tstate != STATE_NORMAL && on_ground() && might_fall(FLEEING_MAX_DROP_HEIGHT+1))
+  if ((tstate == STATE_FLEEING || tstate == STATE_CORNERED) && on_ground() && might_fall(FLEEING_MAX_DROP_HEIGHT+1))
   {
+    // also check for STATE_CORNERED just so
+    // the bomb doesnt automatically turn around
     cornered();
     return;
   }
@@ -429,6 +431,8 @@ GoldBomb::flee(Direction dir)
 void
 GoldBomb::cornered()
 {
+  if (tstate == STATE_CORNERED) return;
+
   set_walk_speed(0);
   m_physic.set_velocity_x(0);
   m_physic.set_acceleration_x(0);
