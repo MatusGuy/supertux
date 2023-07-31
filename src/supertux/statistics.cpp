@@ -322,7 +322,7 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
     Vector pos(static_cast<float>(context.get_width()) - x_offset,
                static_cast<float>(context.get_height()) - height * 6.f - 20.f);
 
-    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 21.f,
+    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 37.f,
                                            pos.y + height).grown(5.f),
                                      Color(0.f, 0.f, 0.f, 0.5f),
                                      10.f, LAYER_HUD - 1);
@@ -333,8 +333,8 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
                                     : Statistics::perfect_color
                               );
     context.color().draw_surface_scaled(coin_icon,
-                                        Rectf(pos.x + width + 1.f, pos.y + 1.f,
-                                              pos.x + width + 32.f, pos.y + 32.f),
+                                        Rectf(pos.x + width, pos.y - 3.f,
+                                              pos.x + width + 32.f, pos.y - 3.f + 32.f),
                                         LAYER_HUD);
   }
 
@@ -351,7 +351,7 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
     Vector pos(static_cast<float>(context.get_width()) - x_offset,
                static_cast<float>(context.get_height()) - height * 5.f - 10.f);
 
-    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 21.f,
+    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 37.f,
                                            pos.y + height).grown(5.f),
                                      Color(0.f, 0.f, 0.f, 0.5f),
                                      10.f, LAYER_HUD - 1);
@@ -362,8 +362,8 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
                                     : Statistics::perfect_color
                               );
     context.color().draw_surface_scaled(badguy_icon,
-                                        Rectf(pos.x + width + 1.f, pos.y + 1.f,
-                                              pos.x + width + 32.f, pos.y + 32.f),
+                                        Rectf(pos.x + width, pos.y - 3.f,
+                                              pos.x + width + 32.f, pos.y - 3.f + 32.f),
                                         LAYER_HUD);
   }
 
@@ -380,7 +380,7 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
     Vector pos(static_cast<float>(context.get_width()) - x_offset,
                static_cast<float>(context.get_height()) - height * 4.f);
 
-    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 21.f,
+    context.color().draw_filled_rect(Rectf(pos.x, pos.y, pos.x + width + 37.f,
                                            pos.y + height).grown(5.f),
                                      Color(0.f, 0.f, 0.f, 0.5f),
                                      10.f, LAYER_HUD - 1);
@@ -391,8 +391,8 @@ Statistics::draw_ingame_stats(DrawingContext& context, bool on_pause_menu)
                                     : Statistics::perfect_color
                               );
     context.color().draw_surface_scaled(secret_icon,
-                                        Rectf(pos.x + width + 1.f, pos.y + 1.f,
-                                              pos.x + width + 32.f, pos.y + 32.f),
+                                        Rectf(pos.x + width, pos.y - 3.f,
+                                              pos.x + width + 32.f, pos.y - 3.f + 32.f),
                                         LAYER_HUD);
   }
 }
