@@ -163,8 +163,6 @@ GoldBomb::active_update(float dt_sec)
     return;
   }
 
-  if (m_frozen) return;
-
   if ((tstate == STATE_FLEEING || tstate == STATE_CORNERED) && on_ground() && might_fall(FLEEING_MAX_DROP_HEIGHT+1))
   {
     // also check for STATE_CORNERED just so
@@ -173,6 +171,8 @@ GoldBomb::active_update(float dt_sec)
     return;
   }
   WalkingBadguy::active_update(dt_sec);
+
+  if (m_frozen) return;
 
   MovingObject* obj = nullptr;
   std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), SAFE_DIST);
@@ -381,6 +381,7 @@ void
 GoldBomb::freeze()
 {
   if (tstate != STATE_TICKING) {
+    tstate = STATE_NORMAL;
     WalkingBadguy::freeze();
   }
 }
