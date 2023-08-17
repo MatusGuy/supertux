@@ -31,17 +31,17 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
-const float HOP_HEIGHT = -250.f;
-const float REALIZE_TIME = 0.5f;
+static const float HOP_HEIGHT = -250.f;
+static const float REALIZE_TIME = 0.5f;
 
 // SAFE_DIST >= REALIZE_DIST
-const float REALIZE_DIST = 32.f * 8.f;
-const float SAFE_DIST = 32.f * 10.f;
+static const float REALIZE_DIST = 32.f * 8.f;
+static const float SAFE_DIST = 32.f * 10.f;
 
-const float NORMAL_WALK_SPEED = 80.0f;
-const float FLEEING_WALK_SPEED = 180.0f;
-const int NORMAL_MAX_DROP_HEIGHT = 16;
-const int FLEEING_MAX_DROP_HEIGHT = 600;
+static const float NORMAL_WALK_SPEED = 80.0f;
+static const float FLEEING_WALK_SPEED = 180.0f;
+static const int NORMAL_MAX_DROP_HEIGHT = 16;
+static const int FLEEING_MAX_DROP_HEIGHT = 600;
 
 GoldBomb::GoldBomb(const ReaderMapping& reader) :
   WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
@@ -176,9 +176,9 @@ GoldBomb::active_update(float dt_sec)
 
   MovingObject* obj = nullptr;
   std::vector<MovingObject*> objs = Sector::get().get_nearby_objects(get_bbox().get_middle(), SAFE_DIST);
-  for (size_t i = 0; i < objs.size(); i++)
+  for (MovingObject* currobj : objs)
   {
-    obj = objs[i];
+    obj = currobj;
 
     auto player = dynamic_cast<Player*>(obj);
     if (player && !player->get_ghost_mode()) break;
@@ -219,45 +219,43 @@ GoldBomb::active_update(float dt_sec)
 
   switch (tstate)
   {
+    case STATE_FLEEING:
+      if (m_dir == (vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT)) return;
+      [[fallthrough]];
 
-  case STATE_FLEEING:
-    if (m_dir == (vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT)) return;
-    [[fallthrough]];
+    case STATE_NORMAL:
+    {
+      if (!on_ground()) break;
 
-  case STATE_NORMAL:
-  {
-    if (!on_ground()) break;
+      // Gold bomb is solid therefore raycast from
+      // one of the upper corners of the hitbox.
+      // (grown 1 just to make sure it doesnt interfere.)
+      const Rectf eye = get_bbox().grown(1.f);
+      if (!Sector::get().free_line_of_sight(
+        vecdist.x <= 0 ? eye.p1() : Vector(eye.get_right(), eye.get_top()),
+        obj->get_bbox().get_middle(),
+        false,
+        obj
+      )) break;
 
-    // Gold bomb is solid therefore raycast from
-    // one of the upper corners of the hitbox.
-    // (grown 1 just to make sure it doesnt interfere.)
-    const Rectf eye = get_bbox().grown(1.f);
-    if (!Sector::get().free_line_of_sight(
-      vecdist.x <= 0 ? eye.p1() : Vector(eye.get_right(), eye.get_top()),
-      obj->get_bbox().get_middle(),
-      false,
-      obj
-    )) break;
+      set_walk_speed(0);
+      m_physic.set_velocity_y(HOP_HEIGHT);
+      m_physic.set_velocity_x(0);
+      m_physic.set_acceleration_x(0);
+      m_dir = vecdist.x > 0 ? Direction::RIGHT : Direction::LEFT;
+      m_sprite->set_action("flee", m_dir);
+      tstate = STATE_REALIZING;
+      m_realize_timer.start(REALIZE_TIME);
+      break;
+    }
 
-    set_walk_speed(0);
-    m_physic.set_velocity_y(HOP_HEIGHT);
-    m_physic.set_velocity_x(0);
-    m_physic.set_acceleration_x(0);
-    m_dir = vecdist.x > 0 ? Direction::RIGHT : Direction::LEFT;
-    m_sprite->set_action("flee", m_dir);
-    tstate = STATE_REALIZING;
-    m_realize_timer.start(REALIZE_TIME);
-    break;
-  }
+    case STATE_REALIZING:
+      if (!m_realize_timer.check()) break;
 
-  case STATE_REALIZING:
-    if (!m_realize_timer.check()) break;
+      flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
+      break;
 
-    flee(vecdist.x > 0 ? Direction::LEFT : Direction::RIGHT);
-    break;
-
-  default: break;
-
+    default: break;
   }
 }
 
@@ -265,10 +263,6 @@ void
 GoldBomb::draw(DrawingContext& context)
 {
   m_sprite->draw(context.color(), get_pos(), m_layer, m_flip);
-  //const Rectf realizerect(get_bbox().get_middle()-Vector(REALIZE_DIST, REALIZE_DIST), get_bbox().get_middle()+Vector(REALIZE_DIST, REALIZE_DIST));
-  //const Rectf saferect(get_bbox().get_middle()-Vector(SAFE_DIST, SAFE_DIST), get_bbox().get_middle()+Vector(SAFE_DIST, SAFE_DIST));
-  //context.color().draw_filled_rect(realizerect, Color::from_rgba8888(255, 0, 0, 100), realizerect.get_size().width/2, 100);
-  //context.color().draw_filled_rect(saferect, Color::from_rgba8888(0, 255, 0, 100), saferect.get_size().width/2, 100);
   if (tstate == STATE_TICKING)
   {
     m_exploding_sprite->set_blend(Blend::ADD);
