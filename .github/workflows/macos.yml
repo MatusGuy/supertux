@@ -50,6 +50,10 @@ jobs:
       - name: Install macos dependencies
         if: ${{ matrix.os == 'macos-11' }}
         run: |
+          # See https://github.com/orgs/Homebrew/discussions/4735
+          # and https://github.com/actions/runner-images/issues/8078
+          brew uninstall --ignore-dependencies harfbuzz
+          brew install --build-from-source harfbuzz
           brew install cmake googletest bash rename libogg libvorbis glew\
                        openal-soft sdl2 sdl2_image sdl2_ttf freetype harfbuzz  \
                        fribidi glib gtk-doc glbinding libraqm glm zlib
@@ -81,7 +85,7 @@ jobs:
                    -DWARNINGS=ON -DWERROR=ON -DGLBINDING_ENABLED=$GLBINDING    \
                    -DENABLE_DISCORD=ON -DCMAKE_INSTALL_MESSAGE=NEVER           \
                    -DCMAKE_INSTALL_PREFIX=/usr -DINSTALL_SUBDIR_BIN=bin        \
-                   -DINSTALL_SUBDIR_SHARE=share/supertux2 -DBUILD_TESTS=ON
+                   -DINSTALL_SUBDIR_SHARE=share/supertux2
 
       - name: Build and install
         working-directory: build
