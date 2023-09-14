@@ -36,7 +36,7 @@ Sprite::Sprite(SpriteData& newdata) :
   m_action(m_data.get_action("normal"))
 {
   if (!m_action)
-    m_action = m_data.actions.begin()->second.get();
+    m_action = m_data.get_actions().begin()->second.get();
   m_last_ticks = g_game_time;
 }
 
