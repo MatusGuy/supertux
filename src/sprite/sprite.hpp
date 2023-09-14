@@ -81,7 +81,7 @@ public:
   float get_current_frame_progress() const { return m_frame; }
 
   /** Get sprite's name */
-  const std::string& get_name() const { return m_data.name; }
+  const std::string& get_name() const { return m_data.get_name(); }
 
   /** Get current action name */
   const std::string& get_action() const { return m_action->name; }
