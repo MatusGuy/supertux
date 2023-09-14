@@ -27,8 +27,6 @@ class ReaderMapping;
 
 class SpriteData final
 {
-  friend class Sprite;
-
 public:
   /**
    * Sprite from data.
@@ -45,7 +43,6 @@ public:
     return name;
   }
 
-private:
   struct Action
   {
     Action();
