@@ -89,6 +89,8 @@ public:
   /** Get an action */
   const Action* get_action(const std::string& act) const;
 
+  Actions& get_actions() { return actions; }
+
 private:
   Actions actions;
   std::string name;
