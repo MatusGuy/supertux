@@ -45,8 +45,6 @@ public:
 
   /** loads a sprite. */
   SpritePtr create(const std::string& filename);
-
-private:
   SpriteData* load(const std::string& filename);
 
 private:

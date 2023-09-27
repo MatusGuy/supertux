@@ -117,6 +117,8 @@ public:
 
   bool has_action (const std::string& name) const { return (m_data.get_action(name) != nullptr); }
 
+  SpriteData& get_data() { return m_data; }
+
 private:
   void update();
 
