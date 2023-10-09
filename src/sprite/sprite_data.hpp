@@ -59,6 +59,9 @@ public:
     /** Hitbox height */
     float hitbox_h;
 
+    /** Whether the hitbox is unisolid */
+    bool hitbox_unisolid;
+
     /** Frames per second */
     float fps;
 
