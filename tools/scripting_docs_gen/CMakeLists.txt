@@ -31,7 +31,7 @@ include(SuperTux/BuildDocumentation)
 
 # Set include directories
 include_directories(${TINYXML2_INCLUDE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR})
 
 # Search for source files
 file(GLOB SRCFILES *.cpp)

@@ -5,7 +5,7 @@ else()
   find_package(PNG REQUIRED)
 endif()
 
-file(GLOB SAVEPNG_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/SDL_SavePNG/savepng.c)
+file(GLOB SAVEPNG_SOURCES_CXX RELATIVE ${PROJECT_SOURCE_DIR} external/SDL_SavePNG/savepng.c)
 add_library(LibSavePNG STATIC ${SAVEPNG_SOURCES_CXX})
 target_include_directories(LibSavePNG SYSTEM PUBLIC
   ${SDL2_INCLUDE_DIRS}

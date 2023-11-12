@@ -57,7 +57,7 @@ if(${PLATFORM} MATCHES "arm64")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D_ARM64_ /DMY_CPU_LE")
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/mk/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/mk/cmake)
 include(ConfigureFiles)
 include(ExternalProject)
 include(CheckCXXCompilerFlag)
@@ -66,7 +66,7 @@ include(CheckSymbolExists)
 ## For autopackage
 set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/games/supertux2")
 
-set(BUILD_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
+set(BUILD_DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 set(BUILD_CONFIG_DATA_DIR "${CMAKE_BINARY_DIR}/data")
 
 ## Check endianess
@@ -184,13 +184,13 @@ include(SuperTux/BuildMessagePot)
 include(SuperTux/BuildMiniswigWrapper)
 
 ## Build list of sources for supertux binary
-file(GLOB SUPERTUX_SOURCES_C RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/obstack/*.c external/findlocale/findlocale.c)
+file(GLOB SUPERTUX_SOURCES_C RELATIVE ${PROJECT_SOURCE_DIR} external/obstack/*.c external/findlocale/findlocale.c)
 
-file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*/*.cpp src/supertux/menu/*.cpp src/video/sdl/*.cpp src/video/null/*.cpp)
-file(GLOB SUPERTUX_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${PROJECT_BINARY_DIR}/tmp/*.rc")
+file(GLOB SUPERTUX_SOURCES_CXX RELATIVE ${PROJECT_SOURCE_DIR} src/*/*.cpp src/supertux/menu/*.cpp src/video/sdl/*.cpp src/video/null/*.cpp)
+file(GLOB SUPERTUX_RESOURCES RELATIVE ${PROJECT_SOURCE_DIR} "${PROJECT_BINARY_DIR}/tmp/*.rc")
 
 if(HAVE_OPENGL)
-  file(GLOB SUPERTUX_OPENGL_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/video/gl/*.cpp)
+  file(GLOB SUPERTUX_OPENGL_SOURCES RELATIVE ${PROJECT_SOURCE_DIR} src/video/gl/*.cpp)
   set(SUPERTUX_SOURCES_CXX ${SUPERTUX_SOURCES_CXX} ${SUPERTUX_OPENGL_SOURCES})
 endif()
 
@@ -199,8 +199,8 @@ list(SORT SUPERTUX_SOURCES_C)
 list(SORT SUPERTUX_SOURCES_CXX)
 list(SORT SUPERTUX_RESOURCES)
 
-if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/scripting/wrapper.cpp)
-  set(SUPERTUX_SOURCES_CXX ${SUPERTUX_SOURCES_CXX} ${CMAKE_CURRENT_SOURCE_DIR}/src/scripting/wrapper.cpp)
+if(NOT EXISTS ${PROJECT_SOURCE_DIR}/src/scripting/wrapper.cpp)
+  set(SUPERTUX_SOURCES_CXX ${SUPERTUX_SOURCES_CXX} ${PROJECT_SOURCE_DIR}/src/scripting/wrapper.cpp)
 endif()
 
 ## On Windows, add an icon
@@ -208,7 +208,7 @@ if(WIN32)
   if(MINGW)
     add_custom_command(
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/supertux_rc.o
-      COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/data/images/engine/icons -i${CMAKE_CURRENT_SOURCE_DIR}/data/images/engine/icons/supertux.rc -o ${CMAKE_CURRENT_BINARY_DIR}/supertux_rc.o)
+      COMMAND ${CMAKE_RC_COMPILER} -I${PROJECT_SOURCE_DIR}/data/images/engine/icons -i${PROJECT_SOURCE_DIR}/data/images/engine/icons/supertux.rc -o ${CMAKE_CURRENT_BINARY_DIR}/supertux_rc.o)
     set(SUPERTUX_SOURCES_C ${SUPERTUX_SOURCES_C} ${CMAKE_CURRENT_BINARY_DIR}/supertux_rc.o)
   endif()
 endif()
@@ -217,7 +217,7 @@ include(SuperTux/CompileAmalgation)
 
 ## Generate supertux executable in the right place
 
-#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 ## Add target for supertux binary
@@ -227,7 +227,7 @@ add_library(supertux2_lib STATIC ${CMAKE_BINARY_DIR}/version.h ${SUPERTUX_SOURCE
 target_include_directories(supertux2_lib PUBLIC ${CMAKE_BINARY_DIR} src/)
 
 if(WIN32)
-  add_executable(supertux2 WIN32 src/main.cpp ${CMAKE_CURRENT_SOURCE_DIR}/data/images/engine/icons/supertux.rc)
+  add_executable(supertux2 WIN32 src/main.cpp ${PROJECT_SOURCE_DIR}/data/images/engine/icons/supertux.rc)
   target_link_libraries(supertux2 LibSDL2main)
 else()
   add_executable(supertux2 src/main.cpp)
@@ -256,7 +256,7 @@ target_include_directories(supertux2_lib SYSTEM PUBLIC
 
 # Include altivec wrapper on ppc
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "^ppc.*")
-  target_include_directories(supertux2_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/ppc)
+  target_include_directories(supertux2_lib PUBLIC ${PROJECT_SOURCE_DIR}/src/ppc)
 endif()
 
 ## Link supertux binary with squirrel and other libraries

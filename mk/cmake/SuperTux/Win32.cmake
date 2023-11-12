@@ -39,7 +39,7 @@ endif()
 ## And shut up about unsafe stuff
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 ## Add an icon
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/mk/msvc/icon_rc.template" "${PROJECT_BINARY_DIR}/tmp/icon.rc")
+configure_file("${PROJECT_SOURCE_DIR}/mk/msvc/icon_rc.template" "${PROJECT_BINARY_DIR}/tmp/icon.rc")
 
 ## Find all used libraries
 if(NOT VCPKG_BUILD)

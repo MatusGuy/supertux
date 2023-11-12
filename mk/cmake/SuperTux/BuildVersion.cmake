@@ -11,7 +11,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
   endif()
 endif()
 
-get_filename_component(BASEDIR ${CMAKE_SOURCE_DIR} NAME)
+get_filename_component(BASEDIR ${PROJECT_SOURCE_DIR} NAME)
 if("${VERSION_LIST}" STREQUAL "")
   if(${BASEDIR} MATCHES "supertux2-[0-9\\.]*")
     string(REGEX REPLACE "(\\.|_|-)" ";" VERSION_LIST ${BASEDIR})
@@ -35,12 +35,12 @@ if(${VERSION_LIST_SIZE} GREATER 0)
     set(VERSION_STRING_GIT "${MAJOR_VERSION_GIT}.${MINOR_VERSION_GIT}.${PATCH_VERSION_GIT}")
   endif()
 
-  configure_file("${CMAKE_SOURCE_DIR}/version.cmake.in" "${CMAKE_SOURCE_DIR}/version.cmake")
+  configure_file("${PROJECT_SOURCE_DIR}/version.cmake.in" "${PROJECT_SOURCE_DIR}/version.cmake")
 endif()
-if(NOT EXISTS "${CMAKE_SOURCE_DIR}/version.cmake")
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/version.cmake")
   message( SEND_ERROR "Could not find GIT or valid version.cmake. Version information will be invalid." )
 endif()
-include("${CMAKE_SOURCE_DIR}/version.cmake")
+include("${PROJECT_SOURCE_DIR}/version.cmake")
 
 if(FORCE_VERSION_STRING)
   set(SUPERTUX_VERSION_STRING "${FORCE_VERSION_STRING}")
@@ -51,11 +51,11 @@ configure_file(version.h.in ${CMAKE_BINARY_DIR}/version.h )
 
 set_source_files_properties(${CMAKE_BINARY_DIR}/version.h
   PROPERTIES GENERATED true)
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/supertux/main.cpp
+set_source_files_properties(${PROJECT_SOURCE_DIR}/src/supertux/main.cpp
   PROPERTIES OBJECT_DEPENDS "${CMAKE_BINARY_DIR}/version.h")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/supertux/title_screen.cpp
+set_source_files_properties(${PROJECT_SOURCE_DIR}/src/supertux/title_screen.cpp
   PROPERTIES OBJECT_DEPENDS "${CMAKE_BINARY_DIR}/version.h")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/addon/addon_manager.cpp
+set_source_files_properties(${PROJECT_SOURCE_DIR}/src/addon/addon_manager.cpp
   PROPERTIES OBJECT_DEPENDS "${CMAKE_BINARY_DIR}/version.h")
 
 # EOF #

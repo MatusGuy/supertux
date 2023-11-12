@@ -7,7 +7,7 @@ option(BUILD_SCRIPTING_DOCUMENTATION "Build scripting API documentation using Do
 # CMakeLists, including this file from a different directory, can define PROJECT_SOURCE_DIR as the path to the SuperTux source.
 if(NOT DEFINED PROJECT_SOURCE_DIR)
   # If not set, use the current source directory.
-  set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+  set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 endif()
 
 if(BUILD_DOCUMENTATION)

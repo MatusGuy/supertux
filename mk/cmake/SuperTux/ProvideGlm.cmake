@@ -9,13 +9,13 @@ if(USE_SYSTEM_GLM)
 endif()
 
 if(NOT USE_SYSTEM_GLM)
-  if (NOT EXISTS "${CMAKE_SOURCE_DIR}/external/glm/CMakeLists.txt")
+  if (NOT EXISTS "${PROJECT_SOURCE_DIR}/external/glm/CMakeLists.txt")
     message(FATAL_ERROR "")
   endif()
 
   set(GLM_PREFIX ${CMAKE_BINARY_DIR}/glm/ex)
   ExternalProject_Add(glm_project
-    SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/glm/"
+    SOURCE_DIR "${PROJECT_SOURCE_DIR}/external/glm/"
     BUILD_BYPRODUCTS
     "${GLM_PREFIX}/include"
     CMAKE_ARGS
