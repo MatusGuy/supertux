@@ -337,6 +337,10 @@ Granito::try_wave()
   Player* player = get_nearest_player();
   if (!player) return false;
 
+  add_debug_range({DetectionRange::Line{get_bbox().get_middle(),
+                                        Vector(get_bbox().get_middle().x + (32.f*4.f * (m_dir == Direction::LEFT ? -1 : 1)),
+                                               get_bbox().get_middle().y)},
+                   Color::CYAN});
   RaycastResult result = Sector::get().get_first_line_intersection(get_bbox().get_middle(),
                                                                    player->get_bbox().get_middle(),
                                                                    false,
@@ -380,6 +384,10 @@ Granito::try_jump()
 
   float eye = (m_dir == Direction::LEFT ? get_bbox().get_left() : get_bbox().get_right());
   float inc = (m_dir == Direction::LEFT ? -32.f : 32.f);
+
+  add_debug_range({DetectionRange::Line{Vector(eye, get_bbox().get_middle().y),
+                                        Vector(eye + inc, get_bbox().get_middle().y)},
+                   Color::MAGENTA});
 
   RaycastResult result = Sector::get().get_first_line_intersection({eye, get_bbox().get_middle().y},
                                                                    {eye + inc, get_bbox().get_middle().y},

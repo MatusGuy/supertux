@@ -23,6 +23,7 @@ Debug g_debug;
 
 Debug::Debug() :
   show_collision_rects(false),
+  show_detection_ranges(false),
   show_worldmap_path(false),
   draw_redundant_frames(false),
   m_use_bitmap_fonts(false),

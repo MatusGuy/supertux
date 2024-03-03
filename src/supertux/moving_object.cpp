@@ -17,20 +17,26 @@
 #include "supertux/moving_object.hpp"
 
 #include "editor/resize_marker.hpp"
+#include "supertux/debug.hpp"
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
+#include "video/drawing_context.hpp"
 
 MovingObject::MovingObject() :
   m_col(COLGROUP_MOVING, *this),
-  m_parent_dispenser()
+  m_parent_dispenser(),
+  m_detection_ranges(),
+  m_curr_detection_range(0)
 {
 }
 
 MovingObject::MovingObject(const ReaderMapping& reader) :
   GameObject(reader),
   m_col(COLGROUP_MOVING, *this),
-  m_parent_dispenser()
+  m_parent_dispenser(),
+  m_detection_ranges(),
+  m_curr_detection_range(0)
 {
   float height, width;
 
@@ -46,6 +52,43 @@ MovingObject::MovingObject(const ReaderMapping& reader) :
 
 MovingObject::~MovingObject()
 {
+}
+
+void MovingObject::draw(DrawingContext& context)
+{
+  if (!g_debug.show_detection_ranges)
+    return;
+
+  for (DetectionRange drange : m_detection_ranges) {
+    auto& range = drange.range;
+    drange.color.alpha = 0.75f;
+    if (std::holds_alternative<Vector>(range))
+    {
+      auto point = std::get<Vector>(range);
+      Rectf rect(point.x - 3, point.y - 3, point.x + 3, point.y + 3);
+      context.color().draw_filled_rect(rect, drange.color, 3, LAYER_HUD);
+    }
+    else if (std::holds_alternative<Rectf>(range))
+    {
+      auto rect = std::get<Rectf>(range);
+      context.color().draw_filled_rect(rect, drange.color, LAYER_HUD);
+    }
+    else if (std::holds_alternative<DetectionRange::Line>(range))
+    {
+      auto line = std::get<DetectionRange::Line>(range);
+      context.color().draw_line(line.first, line.second, drange.color, LAYER_HUD);
+    }
+    else if (std::holds_alternative<DetectionRange::Circle>(range))
+    {
+      auto circle = std::get<DetectionRange::Circle>(range);
+      Vector origin = circle.first;
+      float r = circle.second;
+      Rectf rect(origin.x - r, origin.y - r, origin.x + r, origin.y + r);
+      context.color().draw_filled_rect(rect, drange.color, r, LAYER_HUD);
+    }
+  }
+
+  m_curr_detection_range = 0;
 }
 
 ObjectSettings
@@ -97,6 +140,19 @@ MovingObject::on_flip(float height)
   Vector pos = get_pos();
   pos.y = height - pos.y - get_bbox().get_height();
   set_pos(pos);
+}
+
+void MovingObject::add_debug_range(DetectionRange range)
+{
+  if (!g_debug.show_detection_ranges)
+    return;
+
+  if (m_curr_detection_range + 1 >= m_detection_ranges.size())
+    m_detection_ranges.push_back(range);
+  else
+    m_detection_ranges[m_curr_detection_range] = range;
+
+  m_curr_detection_range++;
 }
 
 /* EOF */

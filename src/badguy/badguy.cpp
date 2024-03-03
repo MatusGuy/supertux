@@ -136,6 +136,8 @@ BadGuy::BadGuy(const ReaderMapping& reader, const std::string& sprite_name,
 void
 BadGuy::draw(DrawingContext& context)
 {
+  MovingObject::draw(context);
+
   if (!m_sprite.get()) return;
 
   if (m_state == STATE_INIT || m_state == STATE_INACTIVE)

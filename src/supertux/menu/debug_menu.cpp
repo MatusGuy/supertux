@@ -63,6 +63,7 @@ DebugMenu::DebugMenu() :
   }
 
   add_toggle(-1, _("Show Collision Rects"), &g_debug.show_collision_rects);
+  add_toggle(-1, _("Show Detection Ranges"), &g_debug.show_detection_ranges);
   add_toggle(-1, _("Show Worldmap Path"), &g_debug.show_worldmap_path);
   add_toggle(-1, _("Show Controller"), &g_config->show_controller);
   add_toggle(-1, _("Show Framerate"), &g_config->show_fps);

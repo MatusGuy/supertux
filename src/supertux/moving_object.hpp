@@ -17,6 +17,8 @@
 #ifndef HEADER_SUPERTUX_SUPERTUX_MOVING_OBJECT_HPP
 #define HEADER_SUPERTUX_SUPERTUX_MOVING_OBJECT_HPP
 
+#include <variant>
+
 #include "collision/collision_hit.hpp"
 #include "collision/collision_object.hpp"
 #include "collision/collision_listener.hpp"
@@ -40,6 +42,8 @@ public:
   MovingObject();
   MovingObject(const ReaderMapping& reader);
   ~MovingObject() override;
+
+  virtual void draw(DrawingContext& context) override;
 
   virtual void collision_solid(const CollisionHit& /*hit*/) override
   {
@@ -108,6 +112,19 @@ public:
   virtual int get_layer() const = 0;
 
 protected:
+  struct DetectionRange
+  {
+    typedef std::pair<Vector, Vector> Line;
+    typedef std::pair<Vector, float> Circle; // origin of the circle, radius
+    typedef std::variant<Vector, Rectf, Line, Circle> Range;
+
+    Range range;
+    Color color;
+  };
+
+protected:
+  void add_debug_range(DetectionRange range);
+
   void set_group(CollisionGroup group)
   {
     m_col.m_group = group;
@@ -117,6 +134,9 @@ protected:
   CollisionObject m_col;
 
   Dispenser* m_parent_dispenser;
+
+  std::vector<DetectionRange> m_detection_ranges;
+  int m_curr_detection_range;
 
 private:
   MovingObject(const MovingObject&) = delete;

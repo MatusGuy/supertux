@@ -203,7 +203,7 @@ Igel::get_default_sprite_name() const
 }
 
 bool
-Igel::should_roll() const
+Igel::should_roll()
 {
   Player* player = get_nearest_player();
   if (!player) return false;

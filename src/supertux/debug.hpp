@@ -32,6 +32,9 @@ public:
   /** Show collision rectangles of moving objects */
   bool show_collision_rects;
 
+  /** Show detection ranges. For example, crusher shows catchment area */
+  bool show_detection_ranges;
+
   /** Draw the path on the worldmap, including invisible paths */
   bool show_worldmap_path;
 

@@ -92,6 +92,8 @@ MovingSprite::MovingSprite(const ReaderMapping& reader, int layer_, CollisionGro
 void
 MovingSprite::draw(DrawingContext& context)
 {
+  MovingObject::draw(context);
+
   m_sprite->draw(context.color(), get_pos(), m_layer, m_flip);
 }
 
