@@ -26,7 +26,11 @@
 #include <sstream>
 #include <string>
 
+#include <fmt/format.h>
 #include <SDL.h>
+
+#include "util/file_system.hpp"
+#include "util/gettext.hpp"
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -146,12 +150,48 @@ ErrorHandler::show_stack_trace()
 
   std::cerr << msg << std::endl;
 
-  SDL_ShowSimpleMessageBox(
-    SDL_MESSAGEBOX_ERROR,
-    "Error",
-    msg.c_str(),
-    nullptr
-  );
+  SDL_MessageBoxButtonData reportButton;
+  reportButton.flags = 0;
+  reportButton.buttonid = 0;
+  reportButton.text = "Report to SuperTux Team";
+
+  SDL_MessageBoxButtonData viewInfoButton;
+  viewInfoButton.flags = 0;
+  viewInfoButton.buttonid = 1;
+  viewInfoButton.text = "More info...";
+
+  SDL_MessageBoxButtonData buttons[2];
+  buttons[0] = reportButton;
+  buttons[1] = viewInfoButton;
+
+  SDL_MessageBoxData data;
+  data.flags = SDL_MESSAGEBOX_ERROR;
+  data.title = "Error";
+  data.message = "SuperTux encountered an unrecoverable error and needs to close.";
+  data.numbuttons = 2;
+  data.buttons = &buttons[0];
+
+  int triggeredButtonId;
+  SDL_ShowMessageBox(&data, &triggeredButtonId);
+
+  if(triggeredButtonId == 0)
+  {
+    std::string base_url = "https://github.com/supertux/supertux/issues/new";
+    std::string issue_title = "[CrashReporter] SuperTux crashes";
+    std::string issue_labels = "type:crash,status:needs-confirmation";
+    std::string url = fmt::format(fmt::runtime(_("{}?labels={}&title={}&body={}")),
+                                  base_url, issue_labels, issue_title, msg);
+    FileSystem::open_url(url);
+  }
+  if(triggeredButtonId == 1)
+  {
+    SDL_ShowSimpleMessageBox(
+      SDL_MESSAGEBOX_ERROR,
+      "Error",
+      msg.c_str(),
+      nullptr
+    );
+  }
 }
 
 [[ noreturn ]] void
