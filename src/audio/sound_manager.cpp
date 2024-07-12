@@ -321,9 +321,12 @@ SoundManager::play_music(const std::string& filename, float fadetime)
     newmusic->set_sound_file(load_sound_file(filename));
     newmusic->set_looping(true);
     newmusic->set_relative(true);
-    newmusic->set_volume(static_cast<float>(m_music_volume) / 100.0f);
+
     if (fadetime > 0)
       newmusic->set_fading(StreamSoundSource::FadingOn, fadetime);
+    else
+      newmusic->set_volume(static_cast<float>(m_music_volume) / 100.0f);
+
     newmusic->play();
 
     m_music_source = std::move(newmusic);

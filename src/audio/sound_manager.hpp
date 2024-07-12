@@ -95,6 +95,7 @@ public:
 
   bool is_audio_enabled() const { return m_device != nullptr && m_context != nullptr; }
   const std::string& get_current_music() const { return m_current_music; }
+  const StreamSoundSource* get_music_source() const { return m_music_source.get(); }
   void update();
 
   /** Tell soundmanager to call update() for stream_sound_source. */

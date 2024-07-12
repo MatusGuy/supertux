@@ -18,6 +18,7 @@
 #include "object/music_object.hpp"
 
 #include "audio/sound_manager.hpp"
+#include "audio/stream_sound_source.hpp"
 #include "object/player.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
@@ -38,6 +39,15 @@ MusicObject::MusicObject(const ReaderMapping& mapping) :
 void
 MusicObject::update(float dt_sec)
 {
+  if (!m_transition)
+    return;
+
+  const StreamSoundSource* source = SoundManager::current()->get_music_source();
+
+  if (source->get_fade_state() == StreamSoundSource::NoFading)
+  {
+    SoundManager::current()->play_music(m_music, 3.2f);
+  }
 }
 
 void
@@ -78,8 +88,15 @@ MusicObject::resume_music(bool instantly)
   }
   else
   {
-    SoundManager::current()->stop_music();
-    SoundManager::current()->play_music(m_music, true);
+    if (instantly)
+    {
+      SoundManager::current()->play_music(m_music, !instantly);
+    }
+    else
+    {
+      m_transition = true;
+      SoundManager::current()->stop_music(3.2f);
+    }
   }
 }
 

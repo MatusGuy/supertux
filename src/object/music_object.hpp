@@ -55,6 +55,7 @@ public:
 private:
   MusicType m_currentmusic;
   std::string m_music;
+  bool m_transition;
 
 private:
   MusicObject(const MusicObject&) = delete;

@@ -26,6 +26,7 @@ SpecialTile::SpecialTile(const ReaderMapping& mapping) :
   WorldMapObject(mapping, "images/engine/editor/specialtile.png"),
   m_map_message(),
   m_passive_message(false),
+  m_music(),
   m_script(),
   m_invisible(false),
   m_apply_direction(),
@@ -42,6 +43,8 @@ SpecialTile::SpecialTile(const ReaderMapping& mapping) :
   mapping.get("map-message", m_map_message);
   mapping.get("passive-message", m_passive_message);
   mapping.get("script", m_script);
+  mapping.get("music", m_music);
+  mapping.get("fade-music", m_fade_music);
 
   mapping.get("apply-to-direction", m_apply_direction);
   if (!m_apply_direction.empty())
@@ -73,6 +76,8 @@ SpecialTile::get_settings()
 
   result.add_translatable_text(_("Message"), &m_map_message, "map-message");
   result.add_bool(_("Show message"), &m_passive_message, "passive-message", false);
+  result.add_file(_("Music"), &m_music, "music", "", {".music", ".ogg", ".wav"}, "music");
+  result.add_bool(_("Fade music"), &m_fade_music, "fade-music");
   result.add_script(_("Script"), &m_script, "script");
   result.add_bool(_("Invisible"), &m_invisible, "invisible-tile", false);
   result.add_text(_("Direction"), &m_apply_direction, "apply-to-direction", "north-east-south-west");

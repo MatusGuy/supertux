@@ -43,6 +43,8 @@ public:
   const std::string& get_map_message() const { return m_map_message; }
   bool is_passive_message() const { return m_passive_message; }
   const std::string& get_script() const { return m_script; }
+  const std::string& get_music() const { return m_music; }
+  bool should_fade_music() const { return m_fade_music; }
 
   bool get_apply_action_north() const { return m_apply_action_north; }
   bool get_apply_action_east() const  { return m_apply_action_east; }
@@ -53,6 +55,10 @@ private:
   /** Message to show in the Map */
   std::string m_map_message;
   bool m_passive_message;
+
+  /** Music to change to when tile is touched */
+  std::string m_music;
+  bool m_fade_music;
 
   /** Script to execute when tile is touched */
   std::string m_script;

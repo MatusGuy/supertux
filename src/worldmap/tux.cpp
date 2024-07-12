@@ -21,6 +21,7 @@
 
 #include "control/input_manager.hpp"
 #include "editor/editor.hpp"
+#include "object/music_object.hpp"
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 #include "supertux/savegame.hpp"
@@ -402,6 +403,13 @@ Tux::process_special_tile(SpecialTile* special_tile)
       log_warning << "Couldn't execute special tile script: " << e.what()
                   << std::endl;
     }
+  }
+
+  if (!special_tile->get_music().empty())
+  {
+    auto& music = m_worldmap->get_sector().get_singleton_by_type<MusicObject>();
+    music.set_music(special_tile->get_music());
+    music.resume_music(!special_tile->should_fade_music());
   }
 }
 
