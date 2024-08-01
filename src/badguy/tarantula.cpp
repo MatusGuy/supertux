@@ -95,9 +95,9 @@ Tarantula::active_update(float dt_sec)
   Player* player = get_nearest_player();
   if (player)
   {
-    if (!Sector::get().is_free_of_statics(Rectf(Vector(player->get_bbox().get_left(),
-                                                       player->get_bbox().get_bottom()+1.f),
-                                                Sizef(player->get_bbox().get_width(), 1.f))))
+    Vector plrbbox = player->get_bbox();
+    Rectf ground(Vector(plrbbox.get_left(), plrbbox.get_bottom()+1.f), Sizef(plrbbox.get_width(), 1.f));
+    if (!Sector::get().is_free_of_tiles(ground) && !Sector::get().is_free_of_objects(ground, COLGROUP_STATIC))
     {
       m_ground_height = player->get_bbox().get_top();
     }

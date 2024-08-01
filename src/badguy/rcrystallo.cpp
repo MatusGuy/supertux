@@ -67,7 +67,8 @@ RCrystallo::initialize()
   magnetic_box.set_top(m_col.m_bbox.get_top() - 80.f);
   if (m_state != RCRYSTALLO_DETECT)
   {
-    m_state = Sector::get().is_free_of_statics(magnetic_box) ? RCRYSTALLO_FALLING : RCRYSTALLO_ROOF;
+    bool fall = Sector::get().is_free_of_tiles(magnetic_box, true) && Sector::get().is_free_of_objects(magnetic_box, COLGROUP_STATIC, true);
+    m_state = fall ? RCRYSTALLO_FALLING : RCRYSTALLO_ROOF;
   }
   else
   {
@@ -97,20 +98,25 @@ RCrystallo::active_update(float dt_sec)
   {
   case RCRYSTALLO_ROOF:
     m_physic.set_gravity_modifier(-1.f);
+
     // Walking and turning properly.
-      if (m_dir != Direction::LEFT && get_pos().x > (m_start_position.x + m_radius - 20.f))
-        targetwalk = -80.f;
-      if (m_dir != Direction::RIGHT && get_pos().x < (m_start_position.x - m_radius + 20.f))
-        targetwalk = 80.f;
-      set_action(std::abs(m_physic.get_velocity_x()) < 80.f ?
-        m_dir == Direction::LEFT ? "roof-slowdown-left" : "roof-slowdown-right" :
-        m_dir == Direction::LEFT ? "roof-left" : "roof-right", -1);
+    if (m_dir != Direction::LEFT && get_pos().x > (m_start_position.x + m_radius - 20.f))
+      targetwalk = -80.f;
+
+    if (m_dir != Direction::RIGHT && get_pos().x < (m_start_position.x - m_radius + 20.f))
+      targetwalk = 80.f;
+
+    set_action(std::abs(m_physic.get_velocity_x()) < 80.f ?
+    m_dir == Direction::LEFT ? "roof-slowdown-left" : "roof-slowdown-right" :
+    m_dir == Direction::LEFT ? "roof-left" : "roof-right", -1);
+
     // Turn at holes.
     reversefallbox.set_top(m_col.m_bbox.get_top() - 33.f);
     reversefallbox.set_left(m_col.m_bbox.get_left() + (m_dir == Direction::LEFT ? -5.f : 34.f));
     reversefallbox.set_right(m_col.m_bbox.get_right() + (m_dir == Direction::LEFT ? -34.f : 5.f));
-    if (Sector::get().is_free_of_statics(reversefallbox))
+    if (Sector::get().is_free_of_tiles(reversefallbox, true) && Sector::get().is_free_of_objects(reversefallbox, COLGROUP_STATIC, true))
       turn_around();
+
     // Detect player and fall when it is time.
     if (player && player->get_bbox().get_right() > m_col.m_bbox.get_left() - 192.f
       && player->get_bbox().get_left() < m_col.m_bbox.get_right() + 192.f
@@ -123,21 +129,25 @@ RCrystallo::active_update(float dt_sec)
       set_action(m_dir == Direction::LEFT ? "roof-detected-left" : "roof-detected-right", 1, ANCHOR_TOP);
       m_state = RCRYSTALLO_DETECT;
     }
+
     WalkingBadguy::active_update(dt_sec, targetwalk, 2.f);
     break;
+
   case RCRYSTALLO_DETECT:
     m_physic.set_velocity(0.f, 0.f);
     m_physic.set_gravity_modifier(0.f);
     m_physic.set_acceleration(0.f, 0.f);
+
     if (m_sprite->animation_done())
     {
-
       m_physic.set_gravity_modifier(1.f);
       set_action(m_dir == Direction::LEFT ? "roof-fall-left" : "roof-fall-right", 1, ANCHOR_TOP);
       m_state = RCRYSTALLO_FALLING;
     }
+
     BadGuy::active_update(dt_sec);
     break;
+
   case RCRYSTALLO_FALLING:
     BadGuy::active_update(dt_sec);
     break;

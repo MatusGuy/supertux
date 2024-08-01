@@ -536,6 +536,13 @@ Sector::draw(DrawingContext& context)
 }
 
 bool
+Sector::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid, MovingObject* ignore_object) const
+{
+  return m_collision_system->is_free_of_objects(rect, group, ignore_unisolid,
+                                                ignore_object ? ignore_object->get_collision_object() : nullptr);
+}
+
+bool
 Sector::is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid, uint32_t tiletype) const
 {
   return m_collision_system->is_free_of_tiles(rect, ignoreUnisolid, tiletype);
@@ -636,6 +643,7 @@ Sector::inside(const Rectf& rect) const
   }
   return false;
 }
+
 
 Size
 Sector::get_editor_size() const

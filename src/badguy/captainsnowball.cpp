@@ -51,8 +51,16 @@ CaptainSnowball::might_climb(int width, int height) const
     x1 = m_col.m_bbox.get_right() + 1;
     x2 = m_col.m_bbox.get_right() + static_cast<float>(width);
   }
-  return ((!Sector::get().is_free_of_statics(Rectf(x1, y1a, x2, y2a))) &&
-          (Sector::get().is_free_of_statics(Rectf(x1, y1b, x2, y2b))));
+
+  Rectf roadblock(x1, y1a, x2, y2a);
+  bool has_roadblock = (!Sector::get().is_free_of_tiles(roadblock) && !Sector::get().is_free_of_objects(roadblock, COLGROUP_STATIC));
+  if (!has_roadblock)
+    return false;
+
+  Rectf climb_check(x1, y1b, x2, y2b);
+  bool should_climb = (Sector::get().is_free_of_tiles(climb_check, true) && !Sector::get().is_free_of_statics(climb_check, COLGROUP_STATIC));
+
+  return should_climb;
 }
 
 void

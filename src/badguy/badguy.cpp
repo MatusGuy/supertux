@@ -851,6 +851,7 @@ BadGuy::might_fall(int height) const
   }
   const Rectf rect = Rectf(x1, y1, x2, y2);
 
+  // TODO: See #2812
   return Sector::get().is_free_of_statics(rect) && Sector::get().is_free_of_specifically_movingstatics(rect);
 }
 
@@ -942,8 +943,9 @@ BadGuy::ungrab(MovingObject& object, Direction dir_)
       }
       else if (dir_ == Direction::DOWN)
       {
-        Vector mov(0, 32);
-        if (Sector::get().is_free_of_statics(get_bbox().moved(mov), this))
+        Vector mov = get_bbox().moved(Vector(0, 32));
+        if (Sector::get().is_free_of_tiles(mov, true) &&
+            Sector::get().is_free_of_objects(mov, COLGROUP_STATIC, true, this))
         {
           // There is free space, so throw it down.
           m_physic.set_velocity_y(500.f);

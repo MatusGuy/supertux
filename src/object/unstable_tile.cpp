@@ -269,7 +269,8 @@ UnstableTile::update(float dt_sec)
       {
         if (m_revive_timer.check())
         {
-          if (Sector::get().is_free_of_movingstatics(Rectf(m_original_pos, get_bbox().get_size()).grown(-1.f)))
+          if (Sector::get().is_free_of_tiles(m_solid_box) &&
+              Sector::get().is_free_of_objects(Rectf(m_original_pos, get_bbox().get_size()).grown(-1.f), COLGROUP_MOVING_STATIC))
           {
             revive();
           }

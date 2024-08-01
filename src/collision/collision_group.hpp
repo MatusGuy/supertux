@@ -18,9 +18,30 @@
 #ifndef HEADER_SUPERTUX_COLLISION_COLLISION_GROUP_HPP
 #define HEADER_SUPERTUX_COLLISION_COLLISION_GROUP_HPP
 
-enum CollisionGroup {
+#include <cinttypes>
+
+enum CollisionGroup : std::uint8_t {
   /** Objects in DISABLED group are not tested for collisions */
-  COLGROUP_DISABLED = 0,
+  COLGROUP_DISABLED = 1 << 0,
+
+
+
+  /** Tested against:
+      - moving objects
+      and it counts as an obstacle during static collision phase.
+
+      Use for static obstacles that Tux walks on. */
+  COLGROUP_STATIC = 1 << 1,
+
+  /** Tested against:
+      - tiles + attributes
+      - static obstacles
+      - touchables
+      - other moving objects
+
+      Use for ordinary objects. */
+  COLGROUP_MOVING = 1 << 2,
+
 
   /** Tested against:
       - tiles + attributes
@@ -30,36 +51,23 @@ enum CollisionGroup {
       and it counts as an obstacle during static collision phase.
 
       Use for kinematic moving objects like platforms and rocks. */
-  COLGROUP_MOVING_STATIC,
-
-  /** Tested against:
-      - tiles + attributes
-      - static obstacles
-      - touchables
-      - other moving objects
-
-      Use for ordinary objects. */
-  COLGROUP_MOVING,
+  COLGROUP_MOVING_STATIC = (COLGROUP_MOVING | COLGROUP_STATIC),
 
   /** Tested against:
       - tiles + attributes
       - static obstacles
 
       Use for interactive particles and decoration. */
-  COLGROUP_MOVING_ONLY_STATIC,
-
-  /** Tested against:
-      - moving objects
-      and it counts as an obstacle during static collision phase.
-
-      Use for static obstacles that Tux walks on. */
-  COLGROUP_STATIC,
+  COLGROUP_MOVING_ONLY_STATIC = 1 << 3,
 
   /** Tested against:
       - moving objects
 
       Use for triggers like spikes/areas or collectibles like coins. */
-  COLGROUP_TOUCHABLE
+  COLGROUP_TOUCHABLE = 1 << 4,
+
+  /// Used as an input for functions. It represents all collision groups.
+  COLGROUP_ALL = 0xFF
 };
 
 #endif

@@ -144,7 +144,8 @@ Haywire::active_update(float dt_sec)
       exception_box.set_top(m_col.m_bbox.get_top() - 32.f);
       exception_box.set_bottom(m_col.m_bbox.get_bottom() - 48.f);
 
-      if (!Sector::get().is_free_of_statics(jump_box) && Sector::get().is_free_of_statics(exception_box))
+      if (!Sector::get().is_free_of_tiles(jump_box) && !Sector::get().is_free_of_objects(jump_box, COLGROUP_STATIC) &&
+          Sector::get().is_free_of_tiles(exception_box) && Sector::get().is_free_of_objects(exception_box, COLGROUP_STATIC))
       {
         m_physic.set_velocity_y(-325.f);
         m_jumping = true;
@@ -158,7 +159,7 @@ Haywire::active_update(float dt_sec)
         gap_box.set_top(m_col.m_bbox.get_top());
         gap_box.set_bottom(m_col.m_bbox.get_bottom() + 28.f);
 
-        if (Sector::get().is_free_of_statics(gap_box))
+        if (Sector::get().is_free_of_tiles(gap_box) && Sector::get().is_free_of_objects(gap_box, COLGROUP_STATIC))
         {
           m_physic.set_velocity_y(-325.f);
           m_jumping = true;

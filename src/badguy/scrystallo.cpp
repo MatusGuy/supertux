@@ -89,28 +89,33 @@ SCrystallo::active_update(float dt_sec)
 {
   auto player = get_nearest_player();
   Rectf downbox = get_bbox();
+
   switch (m_state)
   {
   case SCRYSTALLO_SLEEPING:
     m_physic.set_velocity(0.f, 0.f);
     m_physic.set_acceleration(0.f, 0.f);
+
     // The entity is sleeping peacefully.
     if (player)
     {
       Vector p1 = m_col.m_bbox.get_middle();
       Vector p2 = player->get_bbox().get_middle();
       Vector dist = (p2 - p1);
+
       if (glm::length(dist) <= m_range)
       {
         set_action("waking", m_dir, 1);
         m_state = SCRYSTALLO_WAKING;
       }
     }
+
     BadGuy::active_update(dt_sec);
     break;
   case SCRYSTALLO_WAKING:
     m_physic.set_velocity(0.f, 0.f);
     m_physic.set_acceleration(0.f, 0.f);
+
     // Wake up and acknowledge surroundings once the animation is done.
     if (m_sprite->animation_done())
     {
@@ -130,18 +135,22 @@ SCrystallo::active_update(float dt_sec)
       set_action("jumping", m_dir, -1);
       m_state = SCRYSTALLO_JUMPING;
     }
+
     BadGuy::active_update(dt_sec);
     break;
   case SCRYSTALLO_JUMPING:
     // Popping out of the hole, ends when near the ground.
     downbox.set_bottom(get_bbox().get_bottom() + 10.f);
-    if (!Sector::get().is_free_of_statics(downbox))
+
+    if (!Sector::get().is_free_of_tiles(downbox) && !Sector::get().is_free_of_objects(downbox, COLGROUP_STATIC))
     {
       m_radius_anchor = get_pos();
       m_state = SCRYSTALLO_WALKING;
     }
+
     WalkingBadguy::active_update(dt_sec);
     break;
+
   case SCRYSTALLO_WALKING:
     // Walking and turning properly.
     float targetwalk = m_dir == Direction::LEFT ? -80.f : 80.f;
@@ -149,9 +158,11 @@ SCrystallo::active_update(float dt_sec)
       targetwalk = -80.f;
     if (m_dir != Direction::RIGHT && get_pos().x < (m_radius_anchor.x - m_radius + 20.f))
       targetwalk = 80.f;
+
     set_action(std::abs(m_physic.get_velocity_x()) < 80.f ?
       m_dir == Direction::LEFT ? "slowdown-left" : "slowdown-right" :
       m_dir == Direction::LEFT ? "left" : "right", -1);
+
     WalkingBadguy::active_update(dt_sec, targetwalk, 2.f);
     break;
 	}

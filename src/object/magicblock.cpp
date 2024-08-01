@@ -158,7 +158,9 @@ MagicBlock::update(float dt_sec)
     // lighting suggests going solid
 
     if (!m_is_solid) {
-      if (Sector::get().is_free_of_movingstatics(m_solid_box, this)) {
+      if (Sector::get().is_free_of_tiles(m_solid_box, false) &&
+          Sector::get().is_free_of_objects(m_solid_box, COLGROUP_MOVING_STATIC, false, this))
+      {
         m_is_solid = true;
         m_solid_time = 0;
         m_switch_delay = SWITCH_DELAY;
