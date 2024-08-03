@@ -675,7 +675,7 @@ CollisionSystem::update()
 
 bool
 CollisionSystem::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid,
-                                    CollisionObject* ignore_object)
+                                    const CollisionObject* ignore_object, bool exact_match) const
 {
   for (const auto& object : m_objects) {
     if (object == ignore_object)
@@ -687,7 +687,8 @@ CollisionSystem::is_free_of_objects(const Rectf& rect, CollisionGroup group, boo
     if (ignore_unisolid && object->is_unisolid())
       continue;
 
-    if (object->get_group() & group && rect.overlaps(object->get_bbox()))
+    bool result = (exact_match ? object->get_group() == group : object->get_group() & group);
+    if (result && rect.overlaps(object->get_bbox()))
       return false;
   }
 
@@ -729,62 +730,32 @@ CollisionSystem::is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid, 
 }
 
 bool
-CollisionSystem::is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object, const bool ignoreUnisolid) const
+CollisionSystem::is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object, bool ignore_unisolid) const
 {
-  using namespace collision;
-
-  if (!is_free_of_tiles(rect, ignoreUnisolid)) return false;
-
-  for (const auto& object : m_objects) {
-    if (object == ignore_object) continue;
-    if (!object->is_valid()) continue;
-    if (object->get_group() & COLGROUP_STATIC) {
-      if (rect.overlaps(object->get_bbox())) return false;
-    }
-  }
-
-  return true;
-}
-
-bool
-CollisionSystem::is_free_of_movingstatics(const Rectf& rect, const CollisionObject* ignore_object) const
-{
-  using namespace collision;
-
-  if (!is_free_of_tiles(rect))
+  if (!is_free_of_tiles(rect, ignore_unisolid))
     return false;
 
-  for (const auto& object : m_objects) {
-    if (object == ignore_object)
-      continue;
-
-    if (!object->is_valid())
-      continue;
-
-    if (object->get_group() & (COLGROUP_MOVING | COLGROUP_MOVING_STATIC | COLGROUP_STATIC) &&
-        rect.overlaps(object->get_bbox()))
-    {
-      return false;
-    }
-  }
-
-  return true;
+  return is_free_of_objects(rect, COLGROUP_STATIC, ignore_unisolid, ignore_object);
 }
 
 bool
-CollisionSystem::is_free_of_specifically_movingstatics(const Rectf& rect, const CollisionObject* ignore_object) const
+CollisionSystem::is_free_of_movingstatics(const Rectf& rect, const CollisionObject* ignore_object, bool ignore_unisolid) const
 {
-  using namespace collision;
+  if (!is_free_of_tiles(rect, ignore_unisolid))
+    return false;
 
-  for (const auto& object : m_objects) {
-    if (object == ignore_object) continue;
-    if (!object->is_valid()) continue;
-    if ((object->get_group() == COLGROUP_MOVING_STATIC)
-        && (rect.overlaps(object->get_bbox())))
-      return false;
-  }
+  return is_free_of_objects(rect, COLGROUP_MOVING_STATIC, ignore_unisolid, ignore_object);
+}
 
-  return true;
+// TODO: Remove this function
+bool
+CollisionSystem::is_free_of_specifically_movingstatics(const Rectf& rect, const CollisionObject* ignore_object,
+                                                       bool ignore_unisolid) const
+{
+  if (!is_free_of_tiles(rect, ignore_unisolid))
+    return false;
+
+  return is_free_of_objects(rect, COLGROUP_MOVING_STATIC, ignore_unisolid, ignore_object, true);
 }
 
 CollisionSystem::RaycastResult

@@ -47,7 +47,7 @@ StickyObject::update(float dt_sec)
   for (auto& tm : Sector::get().get_objects_by_type<TileMap>())
   {
     if (large_overlap_box.overlaps(tm.get_bbox()) && tm.is_solid() && glm::length(tm.get_movement(true)) > (1.f * dt_sec) &&
-      !Sector::get().is_free_of_statics(large_overlap_box))
+      !Sector::get().is_free_of_statics(large_overlap_box, nullptr, true))
     {
       m_col.set_movement(tm.get_movement(true));
       if (!m_sticking)
@@ -107,7 +107,7 @@ StickyBadguy::sticky_update(float dt_sec)
   for (auto& tm : Sector::get().get_objects_by_type<TileMap>())
   {
     if (large_overlap_box.overlaps(tm.get_bbox()) && tm.is_solid() && glm::length(tm.get_movement(true)) > (1.f * dt_sec) &&
-      !Sector::get().is_free_of_statics(large_overlap_box))
+      !Sector::get().is_free_of_statics(large_overlap_box, nullptr, true))
     {
       m_col.set_movement(tm.get_movement(true));
       if (!m_sticking)

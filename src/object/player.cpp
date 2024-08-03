@@ -572,11 +572,11 @@ Player::update(float dt_sec)
 
   Rectf wallclingleft = get_bbox();
   wallclingleft.set_left(wallclingleft.get_left() - 8.f);
-  m_on_left_wall = !Sector::get().is_free_of_statics(wallclingleft);
+  m_on_left_wall = !Sector::get().is_free_of_statics(wallclingleft, nullptr, true);
 
   Rectf wallclingright = get_bbox();
   wallclingright.set_right(wallclingright.get_right() + 8.f);
-  m_on_right_wall = !Sector::get().is_free_of_statics(wallclingright);
+  m_on_right_wall = !Sector::get().is_free_of_statics(wallclingright, nullptr, true);
 
   m_can_walljump = ((m_on_right_wall || m_on_left_wall) && !on_ground() && !m_swimming && m_in_walljump_tile && !m_stone);
   if (m_can_walljump && (m_controller->hold(Control::LEFT) || m_controller->hold(Control::RIGHT)) && m_physic.get_velocity_y() >= 0.f && !m_controller->pressed(Control::JUMP))
@@ -1252,6 +1252,8 @@ Player::do_duck() {
     return;
   if (!is_big())
     return;
+
+  // FIXME: What does this detection call check for??
   if (m_sliding && Sector::get().is_free_of_statics(Rectf(get_bbox().get_left(), get_bbox().get_top() - 32.f,
     get_bbox().get_right(), get_bbox().get_bottom())))
     return;
@@ -1293,8 +1295,7 @@ Player::do_standup(bool force_standup)
   new_bbox.move(Vector(0, m_col.m_bbox.get_height() - new_height));
   new_bbox.set_height(new_height);
   if (!force_standup &&
-      !Sector::get().is_free_of_tiles(m_solid_box, true),
-      !Sector::get().is_free_of_objects(new_bbox, COLGROUP_MOVING_STATIC, true, this))
+      !Sector::get().is_free_of_movingstatics(new_bbox, this, true))
   {
     m_crawl = true;
     return;
@@ -1647,8 +1648,7 @@ Player::handle_input()
         }
       }
 
-      if (Sector::get().is_free_of_tiles(dest_, true) &&
-         Sector::get().is_free_of_statics(dest_, moving_object, true))
+      if (Sector::get().is_free_of_statics(dest_, moving_object, true))
       {
         moving_object->set_pos(dest_.p1());
         if (m_controller->hold(Control::UP))

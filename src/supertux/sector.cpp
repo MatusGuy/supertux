@@ -536,10 +536,12 @@ Sector::draw(DrawingContext& context)
 }
 
 bool
-Sector::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid, MovingObject* ignore_object) const
+Sector::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid, MovingObject* ignore_object,
+                           bool exact_match) const
 {
   return m_collision_system->is_free_of_objects(rect, group, ignore_unisolid,
-                                                ignore_object ? ignore_object->get_collision_object() : nullptr);
+                                                ignore_object ? ignore_object->get_collision_object() : nullptr,
+                                                exact_match);
 }
 
 bool
@@ -573,29 +575,32 @@ Sector::is_free_of_statics(float left, float top, float right, float bottom,
 }
 
 bool
-Sector::is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_object) const
+Sector::is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_object, bool ignore_unisolid) const
 {
   return m_collision_system->is_free_of_movingstatics(rect,
-                                                      ignore_object ? ignore_object->get_collision_object() : nullptr);
+                                                      ignore_object ? ignore_object->get_collision_object() : nullptr,
+                                                      ignore_unisolid);
 }
 
 bool
-Sector::is_free_of_movingstatics(float left, float top, float right, float bottom) const
+Sector::is_free_of_movingstatics(float left, float top, float right, float bottom, bool ignore_unisolid) const
 {
-  return m_collision_system->is_free_of_movingstatics(Rectf(Vector(left, top), Vector(right, bottom)), nullptr);
+  return m_collision_system->is_free_of_movingstatics(Rectf(Vector(left, top), Vector(right, bottom)), nullptr, ignore_unisolid);
 }
 
 bool
-Sector::is_free_of_specifically_movingstatics(const Rectf& rect, const MovingObject* ignore_object) const
+Sector::is_free_of_specifically_movingstatics(const Rectf& rect, const MovingObject* ignore_object, bool ignore_unisolid) const
 {
   return m_collision_system->is_free_of_specifically_movingstatics(rect,
-                                                      ignore_object ? ignore_object->get_collision_object() : nullptr);
+                                                      ignore_object ? ignore_object->get_collision_object() : nullptr,
+                                                      ignore_unisolid);
 }
 
 bool
-Sector::is_free_of_specifically_movingstatics(float left, float top, float right, float bottom) const
+Sector::is_free_of_specifically_movingstatics(float left, float top, float right, float bottom, bool ignore_unisolid) const
 {
-  return m_collision_system->is_free_of_specifically_movingstatics(Rectf(Vector(left, top), Vector(right, bottom)), nullptr);
+  return m_collision_system->is_free_of_specifically_movingstatics(Rectf(Vector(left, top), Vector(right, bottom)), nullptr,
+                                                                   ignore_unisolid);
 }
 
 CollisionSystem::RaycastResult

@@ -383,8 +383,8 @@ MrIceBlock::ungrab(MovingObject& object, Direction dir_)
     set_state(ICESTATE_FLAT);
   }
   else if (dir_ == Direction::DOWN) {
-    Vector mov = get_bbox().moved(Vector(0, 32));
-    if (Sector::get().is_free_of_tiles(mov) && Sector::get().is_free_of_objects(mov, COLGROUP_STATIC, true, this)) {
+    Rectf mov = get_bbox().moved(Vector(0, 32));
+    if (Sector::get().is_free_of_statics(mov, this)) {
       // There is free space, so throw it down.
       SoundManager::current()->play("sounds/kick.wav", get_pos());
       m_physic.set_velocity_y(KICKSPEED);

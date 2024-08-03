@@ -943,9 +943,8 @@ BadGuy::ungrab(MovingObject& object, Direction dir_)
       }
       else if (dir_ == Direction::DOWN)
       {
-        Vector mov = get_bbox().moved(Vector(0, 32));
-        if (Sector::get().is_free_of_tiles(mov, true) &&
-            Sector::get().is_free_of_objects(mov, COLGROUP_STATIC, true, this))
+        Rectf mov = get_bbox().moved(Vector(0, 32));
+        if (Sector::get().is_free_of_statics(mov, this, true))
         {
           // There is free space, so throw it down.
           m_physic.set_velocity_y(500.f);

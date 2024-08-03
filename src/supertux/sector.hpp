@@ -110,8 +110,8 @@ public:
   bool inside(const Rectf& rectangle) const;
 
   bool is_free_of_objects(const Rectf& rect, CollisionGroup group = COLGROUP_ALL,
-                          bool exact_match = false, bool ignore_unisolid = false,
-                          CollisionObject* ignore_object) const;
+                          bool ignore_unisolid = false, MovingObject* ignore_object = nullptr,
+                          bool exact_match = false) const;
 
   /** Checks if the specified rectangle is free of (solid) tiles.
       Note that this does not include static objects, e.g. bonus blocks. */
@@ -143,7 +143,7 @@ public:
    * @param float $top
    * @param float $right
    * @param float $bottom
-   * @param bool $ignore_unisolid If ""true"", unisolid tiles will be ignored.
+   * @param bool $ignore_unisolid If ""true"", unisolid tiles & objects will be ignored.
    */
   bool is_free_of_statics(float left, float top, float right, float bottom,
                           bool ignore_unisolid) const;
@@ -152,7 +152,7 @@ public:
       1.) solid tiles and
       2.) MovingObjects in COLGROUP_STATIC, COLGROUP_MOVINGSTATIC or COLGROUP_MOVING.
       This includes badguys and players. */
-  bool is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_object = nullptr) const;
+  bool is_free_of_movingstatics(const Rectf& rect, const MovingObject* ignore_object = nullptr, bool ignore_unisolid = false) const;
   /**
    * @scripting
    * @description Checks if the specified sector-relative rectangle is free of both:
@@ -164,11 +164,11 @@ public:
    * @param float $right
    * @param float $bottom
    */
-  bool is_free_of_movingstatics(float left, float top, float right, float bottom) const;
+  bool is_free_of_movingstatics(float left, float top, float right, float bottom, bool ignore_unisolid) const;
 
   /** Checks if the specified rectangle is free of MovingObjects in COLGROUP_MOVINGSTATIC.
       Note that this does not include moving badguys, or players */
-  bool is_free_of_specifically_movingstatics(const Rectf& rect, const MovingObject* ignore_object = nullptr) const;
+  bool is_free_of_specifically_movingstatics(const Rectf& rect, const MovingObject* ignore_object = nullptr, bool ignore_unisolid = false) const;
   /**
    * @scripting
    * @description Checks if the specified sector-relative rectangle is free of ""MovingObject""s in ""COLGROUP_MOVINGSTATIC"".
@@ -178,7 +178,7 @@ public:
    * @param float $right
    * @param float $bottom
    */
-  bool is_free_of_specifically_movingstatics(float left, float top, float right, float bottom) const;
+  bool is_free_of_specifically_movingstatics(float left, float top, float right, float bottom, bool ignore_unisolid) const;
 
   CollisionSystem::RaycastResult get_first_line_intersection(const Vector& line_start,
                                                              const Vector& line_end,

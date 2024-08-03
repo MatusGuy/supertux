@@ -98,7 +98,7 @@ BigSnowball::update(float dt_sec)
   Rectf side_look_box = get_bbox().grown(-1.f);
   side_look_box.set_left(get_bbox().get_left() + (m_dir == Direction::LEFT ? -1.f : 1.f));
   side_look_box.set_right(get_bbox().get_right() + (m_dir == Direction::LEFT ? -1.f : 1.f));
-  if (!Sector::get().is_free_of_statics(side_look_box))
+  if (!Sector::get().is_free_of_statics(side_look_box, this, true))
   {
     if (m_break_on_impact) {
       spawn_particles();

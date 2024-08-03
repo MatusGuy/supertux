@@ -51,7 +51,14 @@ protected:
     CORRUPTED
   };
 
+  enum WLState {
+    WL_STATE_NORMAL,
+    WL_STATE_FLOATING,
+    WL_STATE_LANDING,
+  };
+
 private:
+  //WLState m_state;
   float m_fall_speed;
 
 private:

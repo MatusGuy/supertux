@@ -64,12 +64,13 @@ public:
   }
 
   bool is_free_of_objects(const Rectf& rect, CollisionGroup group = COLGROUP_ALL,
-                          bool ignore_unisolid = false, CollisionObject* ignore_object);
+                          bool ignore_unisolid = false, const CollisionObject* ignore_object = nullptr,
+                          bool exact_match = false) const;
 
   bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false, uint32_t tiletype = Tile::SOLID) const;
-  bool is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object, const bool ignoreUnisolid) const;
-  bool is_free_of_movingstatics(const Rectf& rect, const CollisionObject* ignore_object) const;
-  bool is_free_of_specifically_movingstatics(const Rectf& rect, const CollisionObject* ignore_object) const;
+  bool is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object= nullptr, bool ignore_unisolid = false) const;
+  bool is_free_of_movingstatics(const Rectf& rect, const CollisionObject* ignore_object = nullptr, bool ignore_unisolid = false) const;
+  bool is_free_of_specifically_movingstatics(const Rectf& rect, const CollisionObject* ignore_object, bool ignore_unisolid = false) const;
 
 
   RaycastResult get_first_line_intersection(const Vector& line_start,

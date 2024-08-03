@@ -67,7 +67,7 @@ RCrystallo::initialize()
   magnetic_box.set_top(m_col.m_bbox.get_top() - 80.f);
   if (m_state != RCRYSTALLO_DETECT)
   {
-    bool fall = Sector::get().is_free_of_tiles(magnetic_box, true) && Sector::get().is_free_of_objects(magnetic_box, COLGROUP_STATIC, true);
+    bool fall = Sector::get().is_free_of_statics(magnetic_box, nullptr, true);
     m_state = fall ? RCRYSTALLO_FALLING : RCRYSTALLO_ROOF;
   }
   else
@@ -114,7 +114,7 @@ RCrystallo::active_update(float dt_sec)
     reversefallbox.set_top(m_col.m_bbox.get_top() - 33.f);
     reversefallbox.set_left(m_col.m_bbox.get_left() + (m_dir == Direction::LEFT ? -5.f : 34.f));
     reversefallbox.set_right(m_col.m_bbox.get_right() + (m_dir == Direction::LEFT ? -34.f : 5.f));
-    if (Sector::get().is_free_of_tiles(reversefallbox, true) && Sector::get().is_free_of_objects(reversefallbox, COLGROUP_STATIC, true))
+    if (Sector::get().is_free_of_statics(reversefallbox, nullptr, true))
       turn_around();
 
     // Detect player and fall when it is time.

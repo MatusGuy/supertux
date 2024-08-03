@@ -142,7 +142,7 @@ SCrystallo::active_update(float dt_sec)
     // Popping out of the hole, ends when near the ground.
     downbox.set_bottom(get_bbox().get_bottom() + 10.f);
 
-    if (!Sector::get().is_free_of_tiles(downbox) && !Sector::get().is_free_of_objects(downbox, COLGROUP_STATIC))
+    if (!Sector::get().is_free_of_statics(downbox))
     {
       m_radius_anchor = get_pos();
       m_state = SCRYSTALLO_WALKING;
