@@ -536,12 +536,10 @@ Sector::draw(DrawingContext& context)
 }
 
 bool
-Sector::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid, MovingObject* ignore_object,
-                           bool exact_match) const
+Sector::is_free_of_objects(const Rectf& rect, uint8_t colgroup, UnisolidCheck uni_check, MovingObject* ignore_object) const
 {
-  return m_collision_system->is_free_of_objects(rect, group, ignore_unisolid,
-                                                ignore_object ? ignore_object->get_collision_object() : nullptr,
-                                                exact_match);
+  return m_collision_system->is_free_of_objects(rect, colgroup, uni_check,
+                                                ignore_object ? ignore_object->get_collision_object() : nullptr);
 }
 
 bool

@@ -34,6 +34,12 @@ class DrawingContext;
 class Rectf;
 class Sector;
 
+enum UnisolidCheck {
+  UNICHK_SOLID,
+  UNICHK_UNISOLID,
+  UNICHK_ALL
+};
+
 class CollisionSystem final
 {
 public:
@@ -63,9 +69,13 @@ public:
     return m_ground_movement_manager;
   }
 
-  bool is_free_of_objects(const Rectf& rect, CollisionGroup group = COLGROUP_ALL,
-                          bool ignore_unisolid = false, const CollisionObject* ignore_object = nullptr,
-                          bool exact_match = false) const;
+
+  bool is_free_of_objects(const Rectf& rect, uint8_t colgroup = COLGROUP_ALL,
+                          UnisolidCheck uni_check = UNICHK_ALL, const CollisionObject* ignore_object = nullptr) const;
+
+  bool is_free_of_objects(const Rectf& rect, uint8_t colgroup = COLGROUP_ALL,
+                          bool ignore_unisolids = false, const CollisionObject* ignore_object = nullptr) const;
+
 
   bool is_free_of_tiles(const Rectf& rect, const bool ignoreUnisolid = false, uint32_t tiletype = Tile::SOLID) const;
   bool is_free_of_statics(const Rectf& rect, const CollisionObject* ignore_object= nullptr, bool ignore_unisolid = false) const;

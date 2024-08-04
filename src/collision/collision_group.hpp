@@ -20,7 +20,7 @@
 
 #include <cinttypes>
 
-enum CollisionGroup : std::uint8_t {
+enum CollisionGroup : int {
   /** Objects in DISABLED group are not tested for collisions */
   COLGROUP_DISABLED = 1 << 0,
 
@@ -51,20 +51,20 @@ enum CollisionGroup : std::uint8_t {
       and it counts as an obstacle during static collision phase.
 
       Use for kinematic moving objects like platforms and rocks. */
-  COLGROUP_MOVING_STATIC = (COLGROUP_MOVING | COLGROUP_STATIC),
+  COLGROUP_MOVING_STATIC = 1 << 3,
 
   /** Tested against:
       - tiles + attributes
       - static obstacles
 
       Use for interactive particles and decoration. */
-  COLGROUP_MOVING_ONLY_STATIC = 1 << 3,
+  COLGROUP_MOVING_ONLY_STATIC = 1 << 4,
 
   /** Tested against:
       - moving objects
 
       Use for triggers like spikes/areas or collectibles like coins. */
-  COLGROUP_TOUCHABLE = 1 << 4,
+  COLGROUP_TOUCHABLE = 1 << 5,
 
   /// Used as an input for functions. It represents all collision groups.
   COLGROUP_ALL = 0xFF

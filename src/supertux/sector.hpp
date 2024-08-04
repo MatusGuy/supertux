@@ -109,9 +109,13 @@ public:
       (a rectangle that is on top of the sector is considered inside) */
   bool inside(const Rectf& rectangle) const;
 
-  bool is_free_of_objects(const Rectf& rect, CollisionGroup group = COLGROUP_ALL,
-                          bool ignore_unisolid = false, MovingObject* ignore_object = nullptr,
-                          bool exact_match = false) const;
+  bool is_free_of_objects(const Rectf& rect, uint8_t group = COLGROUP_ALL,
+                          UnisolidCheck uni_check = UNICHK_ALL, MovingObject* ignore_object = nullptr) const;
+
+  /*
+  bool is_free_of_objects(const Rectf& rect, uint8_t group = COLGROUP_ALL,
+                          bool ignore_unisolid = false, MovingObject* ignore_object = nullptr) const;
+  */
 
   /** Checks if the specified rectangle is free of (solid) tiles.
       Note that this does not include static objects, e.g. bonus blocks. */

@@ -63,7 +63,7 @@ BouncingSnowball::active_update(float dt_sec)
   lookbelow.set_left(get_bbox().get_left() + 10);
   lookbelow.set_right(get_bbox().get_right() - 10);
   lookbelow.set_top(get_bbox().get_top() + 31);
-  bool groundBelow = !Sector::get().is_free_of_objects(lookbelow, COLGROUP_STATIC);
+  bool groundBelow = !Sector::get().is_free_of_objects(lookbelow, COLGROUP_STATIC, UNICHK_ALL);
   if (groundBelow && (m_physic.get_velocity_y() >= 64.0f))
   {
     set_action(m_dir, "down");

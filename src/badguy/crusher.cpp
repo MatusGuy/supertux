@@ -335,10 +335,10 @@ Crusher::update(float dt_sec)
     recover_y = 0.f;
   }
 
-  bool returned_down = m_flip == NO_FLIP && !m_sideways && get_bbox().get_top() <= m_start_position.y + 2.f;
-  bool returned_up = m_flip != NO_FLIP && !m_sideways && get_bbox().get_top() >= m_start_position.y - 2.f;
-  bool returned_left = m_sideways && m_side_dir == Direction::LEFT && get_bbox().get_left() >= m_start_position.x - 2.f;
-  bool returned_right = m_sideways && m_side_dir == Direction::RIGHT && get_bbox().get_left() <= m_start_position.x + 2.f;
+  bool returned_down = m_flip == NO_FLIP && !m_sideways && get_bbox().get_top() <= m_start_position.y;
+  bool returned_up = m_flip != NO_FLIP && !m_sideways && get_bbox().get_top() >= m_start_position.y;
+  bool returned_left = m_sideways && m_side_dir == Direction::LEFT && get_bbox().get_left() >= m_start_position.x;
+  bool returned_right = m_sideways && m_side_dir == Direction::RIGHT && get_bbox().get_left() <= m_start_position.x;
 
   // Handle crusher states.
   switch (m_state)
@@ -378,8 +378,8 @@ Crusher::update(float dt_sec)
     {
       m_physic.reset();
       // we have to offset the crusher when we bring it back to its original position because otherwise it will gain an ugly offset. #JustPhysicErrorThings
-      set_pos(Vector(m_sideways ? m_start_position.x + (2.6f * (m_side_dir == Direction::LEFT ? -1.f : 1.f)) : get_pos().x,
-        m_sideways ? get_pos().y : m_start_position.y + (2.6f * (m_flip ? -1.f : 1.f))));
+      //set_pos(Vector(m_sideways ? m_start_position.x + (2.6f * (m_side_dir == Direction::LEFT ? -1.f : 1.f)) : get_pos().x,
+      //  m_sideways ? get_pos().y : m_start_position.y + (2.6f * (m_flip ? -1.f : 1.f))));
 
       if (m_ic_size == LARGE)
         m_cooldown_timer = PAUSE_TIME_LARGE;

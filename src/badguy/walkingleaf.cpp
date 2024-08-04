@@ -76,16 +76,15 @@ WalkingLeaf::active_update(float dt_sec)
   if (!m_frozen && !m_ignited)
   {
     Rectf floatbox = get_bbox();
-    floatbox.set_top(get_bbox().get_bottom());
-    floatbox.set_height(16.f);
+    //floatbox.set_top(get_bbox().get_bottom());
+    floatbox.set_bottom(get_bbox().get_bottom() +8.f);
 
     Rectf unisolidcheck = floatbox;
     unisolidcheck.set_top(floatbox.get_bottom());
     unisolidcheck.set_height(8.f);
 
     // TODO: Option to only check for unisolids
-    bool float_here = (Sector::get().is_free_of_movingstatics(floatbox, this, true) ||
-                       Sector::get().is_free_of_movingstatics(unisolidcheck, this));
+    bool float_here = (Sector::get().is_free_of_movingstatics(floatbox, this));
 
     bool in_water = !Sector::get().is_free_of_tiles(get_bbox(), true, Tile::WATER);
 

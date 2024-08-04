@@ -673,9 +673,8 @@ CollisionSystem::update()
   }
 }
 
-bool
-CollisionSystem::is_free_of_objects(const Rectf& rect, CollisionGroup group, bool ignore_unisolid,
-                                    const CollisionObject* ignore_object, bool exact_match) const
+bool CollisionSystem::is_free_of_objects(const Rectf& rect, uint8_t colgroup, UnisolidCheck uni_check,
+                                         const CollisionObject* ignore_object) const
 {
   for (const auto& object : m_objects) {
     if (object == ignore_object)
@@ -684,15 +683,25 @@ CollisionSystem::is_free_of_objects(const Rectf& rect, CollisionGroup group, boo
     if (!object->is_valid())
       continue;
 
-    if (ignore_unisolid && object->is_unisolid())
+    if (uni_check != UNICHK_ALL &&
+        (uni_check == UNICHK_UNISOLID ? !object->is_unisolid() : object->is_unisolid()))
+    {
       continue;
+    }
 
-    bool result = (exact_match ? object->get_group() == group : object->get_group() & group);
+    bool result = object->get_group() & colgroup;
     if (result && rect.overlaps(object->get_bbox()))
       return false;
   }
 
   return true;
+}
+
+bool
+CollisionSystem::is_free_of_objects(const Rectf& rect, uint8_t colgroup, bool ignore_unisolid,
+                                    const CollisionObject* ignore_object) const
+{
+  return is_free_of_objects(rect, colgroup, (ignore_unisolid ? UNICHK_SOLID : UNICHK_ALL), ignore_object);
 }
 
 bool
@@ -744,7 +753,7 @@ CollisionSystem::is_free_of_movingstatics(const Rectf& rect, const CollisionObje
   if (!is_free_of_tiles(rect, ignore_unisolid))
     return false;
 
-  return is_free_of_objects(rect, COLGROUP_MOVING_STATIC, ignore_unisolid, ignore_object);
+  return is_free_of_objects(rect, (COLGROUP_MOVING | COLGROUP_STATIC | COLGROUP_MOVING_STATIC), ignore_unisolid, ignore_object);
 }
 
 // TODO: Remove this function
@@ -755,7 +764,7 @@ CollisionSystem::is_free_of_specifically_movingstatics(const Rectf& rect, const 
   if (!is_free_of_tiles(rect, ignore_unisolid))
     return false;
 
-  return is_free_of_objects(rect, COLGROUP_MOVING_STATIC, ignore_unisolid, ignore_object, true);
+  return is_free_of_objects(rect, COLGROUP_MOVING_STATIC, ignore_unisolid, ignore_object);
 }
 
 CollisionSystem::RaycastResult
