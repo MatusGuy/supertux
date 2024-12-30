@@ -36,6 +36,53 @@ private:
   static Color text_color;
 
 public:
+  enum HUDState : std::uint8_t {
+    HUD_STATE_POPUP,
+    HUD_STATE_ACTIVE,
+    HUD_STATE_HIDING,
+    HUD_STATE_HIDDEN
+  };
+
+  class HUDItem {
+  public:
+    int m_pos; /// In x coordinate
+    HUDState m_state;
+    Timer m_timer;
+    AnchorPoint m_anchor;
+
+  public:
+    virtual void popup();
+    virtual void hide();
+    virtual void update(float dt_sec);
+    virtual void draw(DrawingContext& context);
+
+    float get_active_pos() const;
+    float get_hidden_pos() const;
+    virtual float get_width() const;
+  };
+
+  class CoinsHUDItem : public HUDItem {
+  public:
+    SurfacePtr m_coin_surface;
+
+  public:
+    void popup() override;
+    void hide() override;
+    void update(float dt_sec) override;
+    void draw(DrawingContext& context) override;
+  };
+
+  /*
+  class ItemPocketHUDItem : public HUDItem {
+  public:
+    void popup() override;
+    void hide() override;
+    void update(float dt_sec) override;
+    void draw(DrawingContext& context) override;
+  };
+  */
+
+public:
   PlayerStatusHUD(PlayerStatus& player_status);
   virtual GameObjectClasses get_class_types() const override { return GameObject::get_class_types().add(typeid(PlayerStatusHUD)); }
 
@@ -49,9 +96,9 @@ public:
 
 private:
   PlayerStatus& m_player_status;
-  int displayed_coins;
-  int displayed_coins_frame;
-  SurfacePtr coin_surface;
+
+  int m_displayed_coins;
+  int m_displayed_coins_frame;
 
   std::unordered_map<BonusType, SpritePtr> m_bonus_sprites;
   SurfacePtr m_item_pocket_border;

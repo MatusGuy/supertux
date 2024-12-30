@@ -34,9 +34,9 @@ static const int DISPLAYED_COINS_UNSET = -1;
 
 PlayerStatusHUD::PlayerStatusHUD(PlayerStatus& player_status) :
   m_player_status(player_status),
-  displayed_coins(DISPLAYED_COINS_UNSET),
-  displayed_coins_frame(0),
-  coin_surface(Surface::from_file("images/engine/hud/coins-0.png")),
+  m_displayed_coins(DISPLAYED_COINS_UNSET),
+  m_displayed_coins_frame(0),
+  m_coin_surface(Surface::from_file("images/engine/hud/coins-0.png")),
   m_bonus_sprites(),
   m_item_pocket_border(Surface::from_file("images/engine/hud/item_pocket.png"))
 {
@@ -49,12 +49,63 @@ PlayerStatusHUD::PlayerStatusHUD(PlayerStatus& player_status) :
 void
 PlayerStatusHUD::reset()
 {
-  displayed_coins = DISPLAYED_COINS_UNSET;
+  m_displayed_coins = DISPLAYED_COINS_UNSET;
 }
 
 void
 PlayerStatusHUD::update(float dt_sec)
 {
+  switch (m_coin_state)
+  {
+    case HUD_STATE_POPUP:
+    {
+
+      if (m_timer.check())
+      {
+        m_coin_state = HUD_STATE_ACTIVE;
+      }
+
+      break;
+    }
+
+    case HUD_STATE_ACTIVE:
+      if (!m_timer.started())
+      {
+        Vector active_pos = get_active_pos();
+        m_pos = active_pos;
+        m_timer.start(4.f);
+      }
+
+      if (m_timer.check())
+      {
+        m_coin_state = HUD_STATE_HIDING;
+      }
+
+      break;
+
+    case HUD_STATE_HIDING:
+    {
+      Vector active_pos = get_active_pos();
+      if (!m_timer.started())
+      {
+        m_timer.start(0.5f);
+      }
+
+      m_pos.x = ((get_hidden_pos().x - active_pos.x) *
+                 static_cast<float>(QuarticEaseOut(static_cast<double>(m_timer.get_progress())))) +
+                get_hidden_pos().x;
+
+      if (m_timer.check())
+      {
+        m_coin_state = HUD_STATE_HIDDEN;
+      }
+
+      break;
+    }
+
+    case HUD_STATE_HIDDEN:
+      break;
+  }
 }
 
 void
@@ -63,28 +114,28 @@ PlayerStatusHUD::draw(DrawingContext& context)
   if (Editor::is_active())
     return;
 
-  if ((displayed_coins == DISPLAYED_COINS_UNSET) ||
-      (std::abs(displayed_coins - m_player_status.coins) > 100)) {
-    displayed_coins = m_player_status.coins;
-    displayed_coins_frame = 0;
+  if ((m_displayed_coins == DISPLAYED_COINS_UNSET) ||
+      (std::abs(m_displayed_coins - m_player_status.coins) > 100)) {
+    m_displayed_coins = m_player_status.coins;
+    m_displayed_coins_frame = 0;
   }
-  if (++displayed_coins_frame > 2) {
-    displayed_coins_frame = 0;
-    if (displayed_coins < m_player_status.coins) displayed_coins++;
-    if (displayed_coins > m_player_status.coins) displayed_coins--;
+  if (++m_displayed_coins_frame > 2) {
+    m_displayed_coins_frame = 0;
+    if (m_displayed_coins < m_player_status.coins) m_displayed_coins++;
+    if (m_displayed_coins > m_player_status.coins) m_displayed_coins--;
   }
-  displayed_coins = std::min(std::max(displayed_coins, 0), m_player_status.get_max_coins());
+  m_displayed_coins = std::min(std::max(m_displayed_coins, 0), m_player_status.get_max_coins());
 
   float hudpos = BORDER_Y + 1.0f;
-  const std::string coins_text = std::to_string(displayed_coins);
+  const std::string coins_text = std::to_string(m_displayed_coins);
 
   context.push_transform();
   context.set_translation(Vector(0, 0));
   context.transform().scale = 1.f;
-  if (coin_surface)
+  if (m_coin_surface)
   {
-    context.color().draw_surface(coin_surface,
-                                Vector(context.get_width() - BORDER_X - static_cast<float>(coin_surface->get_width()) - Resources::fixed_font->get_text_width(coins_text),
+    context.color().draw_surface(m_coin_surface,
+                                Vector(context.get_width() - BORDER_X - static_cast<float>(m_coin_surface->get_width()) - Resources::fixed_font->get_text_width(coins_text),
                                        hudpos),
                                 LAYER_HUD);
   }
@@ -117,5 +168,30 @@ PlayerStatusHUD::draw(DrawingContext& context)
 
   context.pop_transform();
 }
+
+void
+PlayerStatusHUD::HUDItem::popup()
+{
+  m_fade_helpers.push_back(std::make_unique<FadeHelper>(&m_pos, .5f, get_active_pos(), &QuarticEaseIn));
+}
+
+float
+PlayerStatusHUD::HUDItem::get_active_pos() const
+{
+  // I'm not looking for any Y coordinates here so let that be null.
+  Rectf screen(BORDER_X, 0.f, SCREEN_WIDTH - BORDER_X, 0.f);
+  Vector pos = get_anchor_pos(screen, get_width(), 0.f, m_anchor);
+  return pos.x;
+}
+
+float
+PlayerStatusHUD::HUDItem::get_hidden_pos() const
+{
+  // I'm not looking for any Y coordinates here so let that be null.
+  Rectf screen(BORDER_X, 0.f, SCREEN_WIDTH - BORDER_X, 0.f);
+  Vector pos = get_anchor_pos(screen, get_width(), 0.f, m_anchor);
+  return pos.x;
+}
+
 
 /* EOF */
