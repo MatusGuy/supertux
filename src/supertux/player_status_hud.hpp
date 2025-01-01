@@ -45,29 +45,42 @@ public:
 
   class HUDItem {
   public:
-    int m_pos; /// In x coordinate
+    PlayerStatusHUD* m_parent;
+    Vector m_pos;
+    float m_width;
     HUDState m_state;
     Timer m_timer;
     AnchorPoint m_anchor;
 
   public:
+    HUDItem(PlayerStatusHUD* parent, AnchorPoint anchor);
+
+    void initialize();
+
     virtual void popup();
     virtual void hide();
     virtual void update(float dt_sec);
-    virtual void draw(DrawingContext& context);
+    virtual void draw(DrawingContext& context) = 0;
 
-    float get_active_pos() const;
-    float get_hidden_pos() const;
-    virtual float get_width() const;
+    Vector get_active_pos() const;
+    Vector get_hidden_pos() const;
+
+    inline PlayerStatus& get_player_status() { return m_parent->m_player_status; }
+
+  protected:
+    inline Rectf get_screen_rect() const;
+    inline void reset_timer();
   };
 
-  class CoinsHUDItem : public HUDItem {
+  class CoinHUDItem : public HUDItem {
   public:
     SurfacePtr m_coin_surface;
+    int m_coins;
+    int m_coins_frame;
 
   public:
-    void popup() override;
-    void hide() override;
+    CoinHUDItem(PlayerStatusHUD* parent, AnchorPoint anchor);
+
     void update(float dt_sec) override;
     void draw(DrawingContext& context) override;
   };
@@ -84,10 +97,14 @@ public:
 
 public:
   PlayerStatusHUD(PlayerStatus& player_status);
+  ~PlayerStatusHUD();
+
   virtual GameObjectClasses get_class_types() const override { return GameObject::get_class_types().add(typeid(PlayerStatusHUD)); }
 
   virtual void update(float dt_sec) override;
   virtual void draw(DrawingContext& context) override;
+
+  void popup();
 
   virtual bool is_saveable() const override { return false; }
   virtual bool is_singleton() const override { return true; }
@@ -95,10 +112,11 @@ public:
   void reset();
 
 private:
+  friend class HUDItem;
+
   PlayerStatus& m_player_status;
 
-  int m_displayed_coins;
-  int m_displayed_coins_frame;
+  std::vector<std::unique_ptr<HUDItem>> m_hud_items;
 
   std::unordered_map<BonusType, SpritePtr> m_bonus_sprites;
   SurfacePtr m_item_pocket_border;
