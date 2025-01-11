@@ -18,13 +18,16 @@
 
 #include <iostream>
 
+#include "object/display_effect.hpp"
 #include "sprite/sprite_manager.hpp"
+#include "supertux/debug.hpp"
 #include "supertux/game_object.hpp"
 #include "supertux/level.hpp"
 #include "supertux/player_status.hpp"
 #include "supertux/resources.hpp"
 #include "supertux/title_screen.hpp"
 #include "supertux/screen_manager.hpp"
+#include "supertux/sector.hpp"
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
 #include "editor/editor.hpp"
@@ -79,7 +82,8 @@ PlayerStatusHUD::update(float dt_sec)
 void
 PlayerStatusHUD::draw(DrawingContext& context)
 {
-  if (Editor::is_active())
+  if (g_debug.hide_player_hud || Editor::is_active() ||
+      (Sector::current() && Sector::current()->get_effect().has_active_borders()))
     return;
 
   context.push_transform();
@@ -140,8 +144,10 @@ PlayerStatusHUD::draw(DrawingContext& context)
       if (m_bonus_sprites.find(m_player_status.m_item_pockets[i]) != m_bonus_sprites.end())
       {
         pos += 20;
-        Sprite* sprite = m_bonus_sprites[m_player_status.m_item_pockets.front()].get();
-        sprite->draw(context.color(), pos, LAYER_HUD);
+
+        Sprite* sprite = m_bonus_sprites[m_player_status.m_item_pockets[i]].get();
+        if (sprite)
+          sprite->draw(context.color(), pos, LAYER_HUD);
       }
     }
   }
