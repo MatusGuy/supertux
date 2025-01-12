@@ -77,15 +77,15 @@ Level::initialize()
 
   m_stats.init(*this);
 
-  Savegame* savegame = (GameSession::current() && !Editor::is_active() ?
+  Savegame* savegame = (GameSession::current() && !Editor::current() ?
     &GameSession::current()->get_savegame() : nullptr);
   PlayerStatus& player_status = savegame ? savegame->get_player_status() : s_dummy_player_status;
 
   // Condition 1: If there is a savegame, it shouldn't be from the title screen. (Don't load HUD on title screen)
   // Condition 2: Pause menu shouldn't be suppressed.
   // Condition 3: The level shouldn't be loaded in the editor.
-  if ((!savegame || !savegame->is_title_screen()) &&
-      !m_suppress_pause_menu && !Editor::is_active())
+  const bool is_title_screen = (savegame && savegame->is_title_screen());
+  if (!is_title_screen && !m_suppress_pause_menu && !Editor::is_active())
   {
     for (auto& sector : m_sectors)
       sector->add<PlayerStatusHUD>(player_status);
@@ -95,7 +95,7 @@ Level::initialize()
   Sector* sector = m_sectors.at(0).get();
   sector->add<Player>(player_status, "Tux", 0);
 
-  if (savegame && !savegame->is_title_screen())
+  if (!is_title_screen)
   {
     for (int id = 1; id < InputManager::current()->get_num_users() || id == 0; id++)
     {

@@ -36,14 +36,16 @@ private:
   static Color text_color;
 
 public:
-  enum HUDState : std::uint8_t {
+  enum HUDState : std::uint8_t
+  {
     HUD_STATE_POPUP,
     HUD_STATE_ACTIVE,
     HUD_STATE_HIDING,
     HUD_STATE_HIDDEN
   };
 
-  class HUDItem {
+  class HUDItem
+  {
   public:
     PlayerStatusHUD* m_parent;
     Vector m_pos;
@@ -72,7 +74,8 @@ public:
     inline void reset_timer();
   };
 
-  class CoinHUDItem : public HUDItem {
+  class CoinHUDItem : public HUDItem
+  {
   public:
     SurfacePtr m_coin_surface;
     int m_coins;

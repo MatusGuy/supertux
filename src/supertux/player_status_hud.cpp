@@ -82,8 +82,8 @@ PlayerStatusHUD::update(float dt_sec)
 void
 PlayerStatusHUD::draw(DrawingContext& context)
 {
-  if (g_debug.hide_player_hud || Editor::is_active() ||
-      (Sector::current() && Sector::current()->get_effect().has_active_borders()))
+  const bool is_cutscene = Sector::current() && Sector::current()->get_effect().has_active_borders();
+  if (g_debug.hide_player_hud || is_cutscene)
     return;
 
   context.push_transform();
@@ -176,6 +176,8 @@ PlayerStatusHUD::HUDItem::initialize()
 void
 PlayerStatusHUD::HUDItem::popup()
 {
+  std::cout << "popup" << std::endl;
+
   if (m_state == HUD_STATE_POPUP || m_state == HUD_STATE_ACTIVE)
     return;
 
@@ -295,7 +297,7 @@ PlayerStatusHUD::CoinHUDItem::CoinHUDItem(PlayerStatusHUD* parent, AnchorPoint a
 void
 PlayerStatusHUD::CoinHUDItem::update(float dt_sec)
 {
-  if (std::abs(m_coins - get_player_status().coins) != 0)
+  if (m_coins != get_player_status().coins)
     popup();
 
   if ((m_coins == DISPLAYED_COINS_UNSET) ||
