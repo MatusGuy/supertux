@@ -181,7 +181,7 @@ PlayerStatusHUD::HUDItem::popup()
   if (m_state == HUD_STATE_POPUP || m_state == HUD_STATE_ACTIVE)
     return;
 
-  m_timer.start(.1f);
+  m_timer.start(.5f);
   m_state = HUD_STATE_POPUP;
 }
 
@@ -193,14 +193,13 @@ PlayerStatusHUD::HUDItem::hide()
   if (m_state == HUD_STATE_HIDING || m_state == HUD_STATE_HIDDEN)
     return;
 
-  m_timer.start(.1f);
+  m_timer.start(.5f);
   m_state = HUD_STATE_HIDING;
 }
 
 Rectf
 PlayerStatusHUD::HUDItem::get_screen_rect() const
 {
-  std::cout << "width: " << SCREEN_WIDTH << std::endl;
   return Rectf(BORDER_X, BORDER_Y,
                static_cast<float>(SCREEN_WIDTH) - BORDER_X,
                static_cast<float>(SCREEN_HEIGHT) - BORDER_Y);
@@ -264,7 +263,7 @@ PlayerStatusHUD::HUDItem::update(float dt_sec)
       const float origin = get_active_pos().x;
 
       const float dist = target - origin;
-      const double progress = QuarticEaseOut(static_cast<double>(1.f - m_timer.get_progress()));
+      const double progress = QuarticEaseOut(static_cast<double>(m_timer.get_progress()));
       const float value = origin + (static_cast<float>(progress) * dist);
       m_pos.x = value;
 
@@ -290,7 +289,7 @@ PlayerStatusHUD::CoinHUDItem::CoinHUDItem(PlayerStatusHUD* parent, AnchorPoint a
   m_coins(DISPLAYED_COINS_UNSET),
   m_coins_frame(0)
 {
-  m_width = static_cast<float>(m_coin_surface->get_width()) + 100.f;
+  m_width = static_cast<float>(m_coin_surface->get_width()) + 50.f;
   m_pos = get_active_pos();
 }
 
@@ -312,7 +311,8 @@ PlayerStatusHUD::CoinHUDItem::update(float dt_sec)
     m_coins_frame = 0;
     if (m_coins != get_player_status().coins)
     {
-      reset_timer();
+      if (m_state != HUD_STATE_POPUP)
+        reset_timer();
 
       if (m_coins < get_player_status().coins)
         m_coins++;
